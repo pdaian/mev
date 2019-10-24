@@ -20,9 +20,11 @@ module MEV
     imports DOMAINS
 
 configuration
-    <k color="green"> $PGM:Block </k>
-    <availableTXs> .Set </availableTXs>
-    <balances> .Map </balances>
+    <k color="green"> $PGM:Block </k>       // Instructions left to execute
+    <availableTXs> .Set </availableTXs>     // Available transactions for reordering
+    <balances> .Map </balances>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
+    <minerTXsAllowed> 5 </minerTXsAllowed>  // Number of miner own txs allowed (to prevent infinite statespace)
+
 
 // Boring stuff; setup state before miner can execute.  Setup balances and aggregate available txs.
 rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) </k>
@@ -34,10 +36,25 @@ rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) => Remainde
 rule <k> (TX:ETHTransaction; Remainder:Block) => Remainder </k>
     <availableTXs> ... .Set => SetItem(TX) ...</availableTXs>
 
-rule <k> formtemplate => Address in TokenIn gets (0 -Int TradeAmount); Address in TokenOut gets TradeAmount; 100 in TokenIn gets TradeAmount; 100 in TokenOut gets (0 -Int TradeAmount); formtemplate</k>
-     <availableTXs> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int) => .Set ... </availableTXs>
 
+// Once formtemplate happens, the miner can include transactions; choose any valid USwapTX and execute it
+rule <k> formtemplate => 
+        Address in TokenIn gets (0 -Int TradeAmount); 
+        Address in TokenOut gets (USwapBalanceOut -Int ((USwapBalanceIn *Int USwapBalanceOut) /Int (USwapBalanceIn +Int TradeAmount)));
+        100 in TokenIn gets TradeAmount;
+        100 in TokenOut gets (USwapBalanceOut -Int ((USwapBalanceIn *Int USwapBalanceOut) /Int (USwapBalanceIn +Int TradeAmount)));
+        formtemplate 
+     </k> 
+     <availableTXs> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int) => .Set ... </availableTXs> 
+     <balances> ... (100 in TokenOut) |-> USwapBalanceOut (100 in TokenIn) |-> USwapBalanceIn (Address in TokenIn) |-> UserBalance ... </balances> 
+        requires (UserBalance >=Int TradeAmount) 
 
+rule <k> formtemplate </k>
+     <availableTXs> ... .Set => SetItem(200 in 1 swaps 5 for 0) ... </availableTXs>
+     <minerTXsAllowed> I => I -Int 1 </minerTXsAllowed> requires I >Int 0
+     //<balances> ... (200 in TokenIn) |-> B (100 in TokenOut:Int) |-> X ... </balances>
+
+// The miner can end the game at any time (disable this for debug)
 //rule <k> formtemplate => .K </k>
 
 endmodule
