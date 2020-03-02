@@ -1,7 +1,7 @@
 module MEV-SYNTAX
     imports DOMAINS-SYNTAX
 
-    syntax UniswapTX ::= TokenAccount "swaps" Int "for" Int
+    syntax UniswapTX ::= TokenAccount "swaps" Int "for" Int "id" Int
     syntax ETHTransaction ::= UniswapTX
 
     syntax TokenAccount ::= Int "in" Int // represent balance for account in token
@@ -45,13 +45,12 @@ rule <k> formtemplate =>
         100 in TokenOut gets (USwapBalanceOut -Int ((USwapBalanceIn *Int USwapBalanceOut) /Int (USwapBalanceIn +Int TradeAmount)));
         formtemplate 
      </k> 
-     <availableTXs> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int) => .Set ... </availableTXs> 
+     <availableTXs> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int id _) => .Set ... </availableTXs> 
      <balances> ... (100 in TokenOut) |-> USwapBalanceOut (100 in TokenIn) |-> USwapBalanceIn (Address in TokenIn) |-> UserBalance ... </balances> 
         requires (UserBalance >=Int TradeAmount) 
 
-rule <k> formtemplate </k>
-     <availableTXs> ... .Set => SetItem(200 in 1 swaps 5 for 0) ... </availableTXs>
-     <minerTXsAllowed> I => I -Int 1 </minerTXsAllowed> requires I >Int 0
+//rule <k> formtemplate => 200 in 1 swaps ?X:Int for 0 id I; formtemplate </k>
+//     <minerTXsAllowed> I => I -Int 1 </minerTXsAllowed> requires I >Int 0
      //<balances> ... (200 in TokenIn) |-> B (100 in TokenOut:Int) |-> X ... </balances>
 
 // The miner can end the game at any time (disable this for debug)
