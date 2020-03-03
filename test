@@ -1,0 +1,18 @@
+// initial balances before block
+0 in 0 gets 5;
+0 in 1 gets 10;
+1 in 0 gets 10;
+2 in 1 gets 20;
+// setup uniswap balances; special address 100
+100 in 0 gets 100;
+100 in 1 gets 50;
+
+// transactions performed during interval (reorgable)
+0 in 0 swaps 5 for 1;
+2 in 1 swaps 10 for 0;
+2 in 0 swaps 5 for 1;
+2 in 1 swaps 1 for 0;
+0 in 1 swaps 2 for 0;
+
+// miner game starts
+formtemplate
