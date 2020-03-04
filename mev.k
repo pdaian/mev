@@ -7,7 +7,6 @@ module MEV-SYNTAX
     syntax TokenAccount ::= Int "in" Int // represent balance for account in token
 
     syntax Statement ::= TokenAccount "gets" Int // set token balance
-                    | TokenAccount "updates" Int
                     | ETHTransaction
                     | "formtemplate"
 
@@ -30,13 +29,10 @@ configuration
 
 // Boring stuff; setup state before miner can execute.  Setup balances and aggregate available txs.
 rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) </k>
-     <balances> B => B[(Address in Token) <- 0:Int] </balances> requires notBool((Address in Token) in keys(B))
+     <balances> B => B[(Address in Token) <- 0] </balances> requires notBool((Address in Token) in keys(B))
 
-rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) => (Address in Token updates Amount; Remainder) </k>
-     <balances> B </balances> requires ((Address in Token) in keys(B))
-
-rule <k> (Address:Int in Token:Int updates Amount:Int; Remainder:Block) => Remainder </k>
-     <balances> (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </balances>
+rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) => Remainder </k>
+     <balances> ... (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </balances>
 
 rule <k> (TX:ETHTransaction; Remainder:Block) => Remainder </k>
     <availableTXs> ... .Set => SetItem(TX N) ...</availableTXs>

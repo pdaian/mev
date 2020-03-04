@@ -19,5 +19,5 @@ rule <k> // initial balances before block
     <availableTXs> .Set => ?A3 </availableTXs>
     <numTXs> 0 => ?A1 </numTXs>
     <txLog> .List => ?A2</txLog>
-    ensures ?OutBalance:Int <=Int 5 andBool ?OutBalance:Int >Int -1
+    ensures ?OutBalance:Int <=Int 5 andBool ?OutBalance:Int >Int 0
 endmodule
