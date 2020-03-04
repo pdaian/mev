@@ -7,6 +7,7 @@ module MEV-SYNTAX
     syntax TokenAccount ::= Int "in" Int // represent balance for account in token
 
     syntax Statement ::= TokenAccount "gets" Int // set token balance
+                    | TokenAccount "updates" Int
                     | ETHTransaction
                     | "formtemplate"
 
@@ -23,16 +24,19 @@ configuration
     <k color="green"> $PGM:Block </k>       // Instructions left to execute
     <availableTXs> .Set </availableTXs>     // Available transactions for reordering
     <balances> .Map </balances>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
-    <minerTXsAllowed> 5 </minerTXsAllowed>  // Number of miner own txs allowed (to prevent infinite statespace)
+    //<minerTXsAllowed> 5 </minerTXsAllowed>  // Number of miner own txs allowed (to prevent infinite statespace)
     <numTXs> 0 </numTXs>
     <txLog> .List </txLog>
 
 // Boring stuff; setup state before miner can execute.  Setup balances and aggregate available txs.
 rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) </k>
-     <balances> B => B[(Address in Token) <- 0] </balances> requires notBool((Address in Token) in keys(B))
+     <balances> B => B[(Address in Token) <- 0:Int] </balances> requires notBool((Address in Token) in keys(B))
 
-rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) => Remainder </k>
-     <balances> ... (Address in Token) |-> (OldBalance:Int => (Amount +Int OldBalance)) ... </balances>
+rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) => (Address in Token updates Amount; Remainder) </k>
+     <balances> B </balances> requires ((Address in Token) in keys(B))
+
+rule <k> (Address:Int in Token:Int updates Amount:Int; Remainder:Block) => Remainder </k>
+     <balances> (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </balances>
 
 rule <k> (TX:ETHTransaction; Remainder:Block) => Remainder </k>
     <availableTXs> ... .Set => SetItem(TX N) ...</availableTXs>
@@ -56,6 +60,6 @@ rule <k> formtemplate =>
      //<balances> ... (200 in TokenIn) |-> B (100 in TokenOut:Int) |-> X ... </balances>
 
 // The miner can end the game at any time (disable this for debug)
-//rule <k> formtemplate => .K </k>
+rule <k> formtemplate => .K </k>
 
 endmodule
