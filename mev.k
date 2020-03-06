@@ -23,7 +23,7 @@ configuration
     <k color="green"> $PGM:Block </k>       // Instructions left to execute
     <availableTXs> .Set </availableTXs>     // Available transactions for reordering
     <balances> .Map </balances>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
-    //<minerTXsAllowed> 5 </minerTXsAllowed>  // Number of miner own txs allowed (to prevent infinite statespace)
+    <minerTXsAllowed> 1 </minerTXsAllowed>  // Number of miner own txs allowed (to prevent infinite statespace)
     <numTXs> 0 </numTXs>
     <txLog> .List </txLog>
 
@@ -43,17 +43,16 @@ rule <k> formtemplate =>
         Address in TokenIn gets (0 -Int TradeAmount); 
         Address in TokenOut gets (USwapBalanceOut -Int ((USwapBalanceIn *Int USwapBalanceOut) /Int (USwapBalanceIn +Int TradeAmount)));
         100 in TokenIn gets TradeAmount;
-        100 in TokenOut gets (USwapBalanceOut -Int ((USwapBalanceIn *Int USwapBalanceOut) /Int (USwapBalanceIn +Int TradeAmount)));
+        100 in TokenOut gets 0 -Int (USwapBalanceOut -Int ((USwapBalanceIn *Int USwapBalanceOut) /Int (USwapBalanceIn +Int TradeAmount)));
         formtemplate 
      </k> 
      <availableTXs> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int ID:Int) => .Set ... </availableTXs> 
      <balances> ... (100 in TokenOut) |-> USwapBalanceOut (100 in TokenIn) |-> USwapBalanceIn (Address in TokenIn) |-> UserBalance ... </balances> 
-     <txLog> ... .List => ListItem(ID) </txLog>
+     <txLog> ... .List => ListItem(Address in TokenIn swaps TradeAmount for TokenOut ID) </txLog>
         requires (UserBalance >=Int TradeAmount) 
 
-//rule <k> formtemplate => 200 in 1 swaps ?X:Int for 0 I; formtemplate </k>
-//     <minerTXsAllowed> I => I -Int 1 </minerTXsAllowed> requires I >Int 0
-     //<balances> ... (200 in TokenIn) |-> B (100 in TokenOut:Int) |-> X ... </balances>
+rule <k> formtemplate => 200 in 1 swaps ?X:Int for 0; formtemplate </k>
+     <minerTXsAllowed> I => I -Int 1 </minerTXsAllowed> requires I >Int 0
 
 // The miner can end the game at any time (disable this for debug)
 rule <k> formtemplate => .K </k>
