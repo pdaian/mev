@@ -21,21 +21,21 @@ module MEV
 
 configuration
     <k color="green"> $PGM:Block </k>       // Instructions left to execute
-    <availableTXs> .Set </availableTXs>     // Available transactions for reordering
-    <balances> .Map </balances>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
+    <M> .Set </M>     // Available transactions for reordering
+    <S> .Map </S>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
     <minerTXsAllowed> 1 </minerTXsAllowed>  // Number of miner own txs allowed (to prevent infinite statespace)
     <numTXs> 0 </numTXs>
-    <txLog> .List </txLog>
+    <B> .List </B>
 
-// Boring stuff; setup state before miner can execute.  Setup balances and aggregate available txs.
+// Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
 rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) </k>
-     <balances> B => B[(Address in Token) <- 0] </balances> requires notBool((Address in Token) in keys(B))
+     <S> B => B[(Address in Token) <- 0] </S> requires notBool((Address in Token) in keys(B))
 
 rule <k> (Address:Int in Token:Int gets Amount:Int; Remainder:Block) => Remainder </k>
-     <balances> ... (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </balances>
+     <S> ... (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </S>
 
 rule <k> (TX:ETHTransaction; Remainder:Block) => Remainder </k>
-    <availableTXs> ... .Set => SetItem(TX N) ...</availableTXs>
+    <M> ... .Set => SetItem(TX N) ...</M>
     <numTXs> N:Int => N +Int 1 </numTXs>
 
 // Once formtemplate happens, the miner can include transactions; choose any valid USwapTX and execute it
@@ -46,9 +46,9 @@ rule <k> formtemplate =>
         100 in TokenOut gets 0 -Int (USwapBalanceOut -Int ((USwapBalanceIn *Int USwapBalanceOut) /Int (USwapBalanceIn +Int TradeAmount)));
         formtemplate 
      </k> 
-     <availableTXs> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int ID:Int) => .Set ... </availableTXs> 
-     <balances> ... (100 in TokenOut) |-> USwapBalanceOut (100 in TokenIn) |-> USwapBalanceIn (Address in TokenIn) |-> UserBalance ... </balances> 
-     <txLog> ... .List => ListItem(Address in TokenIn swaps TradeAmount for TokenOut ID) </txLog>
+     <M> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int ID:Int) => .Set ... </M> 
+     <S> ... (100 in TokenOut) |-> USwapBalanceOut (100 in TokenIn) |-> USwapBalanceIn (Address in TokenIn) |-> UserBalance ... </S> 
+     <B> ... .List => ListItem(Address in TokenIn swaps TradeAmount for TokenOut ID) </B>
         requires (UserBalance >=Int TradeAmount) 
 
 rule <k> formtemplate => 200 in 1 swaps ?X:Int for 0; formtemplate </k>
