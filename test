@@ -4,15 +4,15 @@
 1 in 0 gets 10;
 2 in 1 gets 20;
 // setup uniswap balances; special address 100
-100 in 0 gets 100;
-100 in 1 gets 50;
+Uniswap in 0 gets 100;
+Uniswap in 1 gets 50;
 
 // transactions performed during interval (reorgable)
-0 in 0 swaps 5 for 1 fee 0;
-2 in 1 swaps 10 for 0 fee 0;
-2 in 0 swaps 5 for 1 fee 0;
-2 in 1 swaps 1 for 0 fee 0;
-0 in 1 swaps 2 for 0 fee 0;
+0 in 0 swaps 5 for 1 input fee 0;
+2 in 1 swaps 10 for 0 input fee 0;
+2 in 0 swaps 5 for 1 input fee 0;
+2 in 1 swaps 1 for 0 input fee 0;
+0 in 1 swaps 2 for 0 input fee 0;
 
 // miner game starts
 formtemplate
