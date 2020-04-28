@@ -1,7 +1,7 @@
 module MEV-SYNTAX
     imports DOMAINS-SYNTAX
 
-    syntax UniswapTX ::= TokenAccount "swaps" Int "for" Int
+    syntax UniswapTX ::= TokenAccount "swaps" Int "for" Int "input" | TokenAccount "swaps" Int "for" Int "output"
     syntax ETHTransaction ::= UniswapTX | ETHTransaction Int | ETHTransaction "fee" Int
 
     syntax TokenAccount ::= Int "in" Int // represent balance for account in token
@@ -47,9 +47,23 @@ rule <k> formtemplate =>
         Address in 0 gets (0 -Int GasFee);
         formtemplate 
      </k> 
-     <M> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int fee GasFee:Int ID:Int) => .Set ... </M> 
+     <M> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int input fee GasFee:Int ID:Int) => .Set ... </M> 
      <S> ... (100 in TokenOut) |-> USwapBalanceOut (100 in TokenIn) |-> USwapBalanceIn (Address in TokenIn) |-> UserBalance ... </S> 
-     <B> ... .List => ListItem(Address in TokenIn swaps TradeAmount for TokenOut ID) </B>
+     <B> ... .List => ListItem(Address in TokenIn swaps TradeAmount for TokenOut input fee GasFee ID) </B>
+        requires (UserBalance >=Int TradeAmount) 
+
+// Once formtemplate happens, the miner can include transactions; choose any valid USwapTX and execute it
+rule <k> formtemplate => 
+        Address in TokenIn gets (0 -Int TradeAmount); 
+        Address in TokenOut gets (997 *Int TradeAmount *Int USwapBalanceOut) /Int (1000 *Int USwapBalanceIn +Int 997 *Int TradeAmount);
+        100 in TokenIn gets TradeAmount;
+        100 in TokenOut gets 0 -Int (997 *Int TradeAmount *Int USwapBalanceOut) /Int (1000 *Int USwapBalanceIn +Int 997 *Int TradeAmount);
+        Address in 0 gets (0 -Int GasFee);
+        formtemplate 
+     </k> 
+     <M> ... SetItem(Address:Int in TokenIn:Int swaps TradeAmount:Int for TokenOut:Int input fee GasFee:Int ID:Int) => .Set ... </M> 
+     <S> ... (100 in TokenOut) |-> USwapBalanceOut (100 in TokenIn) |-> USwapBalanceIn (Address in TokenIn) |-> UserBalance ... </S> 
+     <B> ... .List => ListItem(Address in TokenIn swaps TradeAmount for TokenOut input fee GasFee ID) </B>
         requires (UserBalance >=Int TradeAmount) 
 
 //rule <k> formtemplate => 200 in 1 swaps ?X:Int for 0; formtemplate </k>
