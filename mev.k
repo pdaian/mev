@@ -2,7 +2,7 @@ module MEV-SYNTAX
     imports DOMAINS-SYNTAX
 
 
-    syntax UniswapTX ::= TokenAccount "swaps" Int "input" "for" TokenAccount | TokenAccount "swaps" Int "for" TokenAccount "output"
+    syntax UniswapTX ::= TokenAccount "swaps" Int "input" "for" ETHAddress | TokenAccount "swaps" Int "for" ETHAddress "output"
     syntax ETHTransaction ::= UniswapTX | ETHTransaction Int | ETHTransaction "fee" Int
     syntax ETHAddress ::= Int | "Uniswap" | "ETH"
 
