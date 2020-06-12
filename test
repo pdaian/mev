@@ -8,7 +8,7 @@
 100 in 1 gets 500000000000000000000000;
 
 // transactions performed during interval (reorgable)
-0 in 0 swaps 50000000000000000000000 for 1 output fee 0;
+0 in 0 swaps 50000000000000000000000 input for 0 fee 0;
 2 in 1 swaps 100000000000000000000000 for 0 output fee 0;
 2 in 0 swaps 50000000000000000000000 for 1 output fee 0;
 2 in 1 swaps 10000000000000000000000 for 0 output fee 0;
