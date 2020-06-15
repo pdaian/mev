@@ -15,8 +15,8 @@ module MEV-SYNTAX
                     | "formtemplate"
 
     syntax Block ::= Statement
-                    > Statement ";" Block
-
+                    > Block ";" Statement
+                    > Statement "->" Block
 endmodule
 
 module MEV
@@ -32,15 +32,20 @@ configuration
     <B> .List </B>
 
 // Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
-rule <k> (Address:ETHAddress in Token:ETHAddress gets Amount:Int; Remainder:Block) </k>
+rule <k> Address:ETHAddress in Token:ETHAddress gets Amount:Int; Remainder </k>
      <S> B => B[(Address in Token) <- 0] </S> requires notBool((Address in Token) in keys(B))
 
-rule <k> (Address:ETHAddress in Token:ETHAddress gets Amount:Int; Remainder:Block) => Remainder </k>
+rule <k> (Address:ETHAddress in Token:ETHAddress gets Amount:Int; Remainder) => Remainder </k>
      <S> ... (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </S> 
      // requires (Amount >=Int (0 -Int OldBalance))
 
-rule <k> (TX:ETHTransaction; Remainder:Block) => Remainder </k>
-    <M> ... .List => ListItem(TX) </M>
+//rule <k> Remainder; TX:ETHTransaction; formtemplate => Remainder; formtemplate </k>
+  //  <M> .List => ListItem(TX) ... </M>
+
+//rule <k> TX:ETHTransaction; formtemplate => formtemplate </k>
+  //  <M> .List => ListItem(TX) ... </M>
+
+rule <k> B:Block; B:Block; S:Statement => S -> B </k>
 
 // Once formtemplate happens, the miner can include transactions; choose any valid USwapTX and execute it
 rule <k> formtemplate => 
