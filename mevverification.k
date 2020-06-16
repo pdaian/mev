@@ -1,30 +1,10 @@
 module MEVVERIFICATION
     imports MEV
-rule <k> // initial balances before block
-			0 in 0 gets 5;
-200 in 1 gets 5000;
-0 in 1 gets 10;
-1 in 0 gets 10;
-2 in 1 gets 20;
-// setup uniswap balances; special address 100
-100 in 0 gets 100;
-100 in 1 gets 50;
-
-0 in 0 swaps 5 for 1;
-2 in 1 swaps 10 for 0;
-2 in 0 swaps 5 for 1;
-2 in 1 swaps 1 for 0;
-0 in 1 swaps 2 for 0;
-
-			// miner game starts
-			formtemplate
-			 => . 
+rule <k> 
+    // transaction 0x95d079a82bbf062f2a58d1fd520b8cc09ec341cb746b453bb33a6ede885a0174
+    411498817949579190580624588476262637924693753695 adds 150000000 tokens and 76000000000000000 eth of liquidity to 1000808495181554617867411332362082075473764097814;
+			 => .
 	 </k>
-    <balances>.Map =>(200 in 1) |-> ?OutBalance ?REST:Map</balances>
-    <availableTXs> .Set => ?A3 </availableTXs>
-    <numTXs> 0 => ?A1 </numTXs>
-    <minerTXsAllowed> 1 => ?A4 </minerTXsAllowed>
-    <txLog> .List => ?A2</txLog>
-    //ensures ?OutBalance:Int ==Int 5000
-    ensures ?OutBalance:Int <=Int 5000 andBool ?OutBalance:Int >=Int 0
+//    <S>... .Map =>(Uniswap in 0) |-> ?OutBalance:Int ... </S>
+  //  ensures ?OutBalance:Int <=Int 5000 andBool ?OutBalance:Int >Int 0 
 endmodule
