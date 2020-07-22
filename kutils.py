@@ -14,8 +14,8 @@ BLANK_SPEC = """module BOUND
 endmodule
 """
 
-def find_integer_bound(program, outfile, bound_clause):
-    bound = 99999999999999999999999999999999999999999999999999999999
+def find_integer_bound(program, outfile, bound_clause, starting_value):
+    bound = starting_value
     previous_output = ""
     output = ""
     while True:
@@ -28,8 +28,8 @@ def find_integer_bound(program, outfile, bound_clause):
         if "#True" in output:
             print("BOUND FOUND!", bound)
             print("Writing best configuration to", outfile, "...")
-            print(last_output)
-            open(outfile, 'w').write(last_output)
+            print(previous_output)
+            open(outfile, 'w').write(previous_output)
             break
         output = output[output.find('<generatedTop>'):]
         output = output[:output.find('</generatedTop>')+15]

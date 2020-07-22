@@ -1,6 +1,5 @@
 from kutils import find_integer_bound
 
-
 UNISWAP_LOWER_BOUND = "{?S[Uniswap in 0]}:>Int >=Int %d"
 UNISWAP_UPPER_BOUND = "{?S[Uniswap in 0]}:>Int <=Int %d"
 PROGRAM = """// transaction 0x003c5d067ee03836a4374f4d5c3466e0d8328f62496b5dd1cbdf4d6db6aeacfe
@@ -14,5 +13,5 @@ PROGRAM = """// transaction 0x003c5d067ee03836a4374f4d5c3466e0d8328f62496b5dd1cb
         // transaction 0xb0cece3304dc2563fbb2d17736c751b8b441f04683e529c0a251799b7286f6b8
         368839096625159992408953185476375976377428775247 in 1454383474624795085458277788004692202315323288702 swaps 2419684155471892146710118 input for 0 fee 1008871952048;"""
 
-find_integer_bound(PROGRAM, 'uniswap_lower_bound.out', UNISWAP_LOWER_BOUND)
-find_integer_bound(PROGRAM, 'uniswap_upper_bound.out', UNISWAP_UPPER_BOUND)
+find_integer_bound(PROGRAM, 'uniswap_lower_bound.out', UNISWAP_LOWER_BOUND, 999999999999999999999999999999999)
+find_integer_bound(PROGRAM, 'uniswap_upper_bound.out', UNISWAP_UPPER_BOUND, 0)
