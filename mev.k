@@ -82,12 +82,4 @@ rule <k> .K => Uniswap in Token gets 0 -Int TokenAmount ~> Uniswap in 0 gets 0 -
      <M> ... SetItem(LiquidityProvider:ETHAddress removes TokenAmount:Int tokens and ETHAmount:Int eth of liquidity from Token:ETHAddress) => .Set ... </M> 
      <B> ... .List => ListItem(LiquidityProvider removes TokenAmount tokens and ETHAmount eth of liquidity from Token) </B>
     
-
-
-//rule <k> formtemplate => 200 in 1 swaps ?X:Int for 0; formtemplate </k>
-//     <minerTXsAllowed> I => I -Int 1 </minerTXsAllowed> requires I >Int 0
-
-// The miner can end the game at any time (disable this for debug)
-// rule <k> formtemplate => .K </k>
-
 endmodule
