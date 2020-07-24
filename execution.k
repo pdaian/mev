@@ -34,12 +34,12 @@ configuration
     rule <k> TX:ETHTransaction => .K ... </k>
          <M> ... .Set => SetItem(TX) </M>
 
+    rule <k> TX:ETHTransaction => .K ... </k>
+
     rule <k> .K => exec(TX) </k>
-         <M> ... SetItem(TX:ETHTransaction) ... </M>
+         <M> ... SetItem(TX:ETHTransaction) => .Set ... </M>
 
     rule <k> B:Block S:Statement; => B ~> S ... </k>
     rule <k> S:Statement; => S ... </k>
 
-    rule <k> .K </k>
-         <M> ... SetItem(TX:ETHTransaction) => .Set ... </M>
 endmodule
