@@ -1,6 +1,7 @@
 module EXECUTION-SYNTAX
     imports DOMAINS-SYNTAX
 
+    syntax Executable ::= "exec(" ETHTransaction ")"
     syntax ETHTransaction ::= ETHTransaction "fee" Int
     syntax ETHAddress ::= Int | "ETH"
     syntax BalanceEntry ::= ETHAddress "in" ETHAddress
@@ -32,6 +33,9 @@ configuration
 
     rule <k> TX:ETHTransaction => .K ... </k>
          <M> ... .Set => SetItem(TX) </M>
+
+    rule <k> .K => exec(TX) </k>
+         <M> ... SetItem(TX:ETHTransaction) ... </M>
 
     rule <k> B:Block S:Statement; => B ~> S ... </k>
     rule <k> S:Statement; => S ... </k>
