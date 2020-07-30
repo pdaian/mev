@@ -1,5 +1,7 @@
 from subprocess import Popen, PIPE
 import re
+import random
+
 
 BLANK_SPEC = """module BOUND
     imports MEV
@@ -20,9 +22,9 @@ def find_integer_bound(program, outfile, bound_clause, starting_value):
     output = ""
     while True:
         spec = BLANK_SPEC % (program, bound_clause % (bound))
-        open("/tmp/bound.k", "w").write(spec)
+        open("bound.k", "w").write(spec)
         print("Starting proof...")
-        pipe = Popen("kprove -v --debug --default-claim-type all-path --z3-impl-timeout 500 /tmp/bound.k", shell=True, stdout=PIPE, stderr=PIPE)
+        pipe = Popen("kprove -v --debug --default-claim-type all-path --z3-impl-timeout 500 bound.k", shell=True, stdout=PIPE, stderr=PIPE)
         output = pipe.stdout.read() + pipe.stderr.read()
         output = str(output, "utf-8")
         if "#True" in output:
