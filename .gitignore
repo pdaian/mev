@@ -1,2 +1,5 @@
 *.swp
 mev-kompiled
+.kprove-*
+__pycache__
+*~

@@ -55,7 +55,7 @@ rule
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(Address draws Amount debt from vault Vault) </B>
-     requires TotalCollateral *Int Px >=Int 150 *Int (TotalDebt +Int Amount)
+     requires TotalCollateral *Int Px *Int 100 >=Int 150 *Int (TotalDebt +Int Amount)
 
 rule
      <k> exec(Address:ETHAddress frees Amount:Int collateral from vault Vault:ETHAddress) =>
@@ -66,7 +66,7 @@ rule
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(Address frees Amount collateral from vault Vault) </B>
-     requires (TotalCollateral -Int Amount) *Int Px >=Int 150 *Int TotalDebt
+     requires (TotalCollateral -Int Amount) *Int Px *Int 100 >=Int 150 *Int TotalDebt
 
 rule
      <k> exec(Address:ETHAddress wipes Amount:Int debt from vault Vault:ETHAddress) =>
@@ -81,23 +81,41 @@ rule
 rule
      <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) =>
          Vault in SAI gets (0 -Int TotalDebt) ~>
-	 	 Vault in 0 gets 0 -Int (((130 *Int TotalDebt) /Int Px)) ~> // 30% penalty
+	 	 Vault in 0 gets 0 -Int ((130 *Int TotalDebt) /Int (Px *Int 100)) ~> // 30% penalty
 	 	 Address in SAI gets TotalDebt ~>
-	 	 Address in 0 gets (0 -Int (((90 *Int TotalDebt) /Int Px)) ) //10% discount
+	 	 Address in 0 gets (0 -Int ((90 *Int TotalDebt) /Int (Px *Int 100)) ) //10% discount
      </k>  
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(Address bites vault Vault) </B>
-     requires (TotalCollateral *Int Px <Int 100000 *Int TotalDebt) andBool (Px >Int 0) //TODO: change ratio
+     requires (TotalCollateral *Int Px *Int 100 <Int 150 *Int TotalDebt) andBool (Px >Int 0)
 
-//rule
-//     <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) => FAIL </k>  
-//     <B> ... .List => ListItem(FAIL) </B>
+rule
+     <k> exec(_ bites vault _) => FAIL </k>  
+     <B> ... .List => ListItem(FAIL) </B>
+
+
+rule
+     <k> exec(_ draws _ debt from vault _) => FAIL </k>  
+     <B> ... .List => ListItem(FAIL) </B>
+
+rule
+	 <k> exec(_ locks _ collateral to vault _) => FAIL </k>
+     <B> ... .List => ListItem(FAIL) </B>
+
+
+rule
+	 <k> exec(_ opens vault _) => FAIL </k>
+     <B> ... .List => ListItem(FAIL) </B>
+
+rule
+     <k> exec(_ is given vault _) => FAIL </k>  
+     <B> ... .List => ListItem(FAIL) </B>
 
 
 rule
      <k> exec(Address:ETHAddress is given vault Vault:ETHAddress) => .K </k>  
-     <V> V => V[(Vault) <- Address:ETHAddress] </V>
+     <V> ... Vault |-> (_ => Address)  ... </V>
      <B> ... .List => ListItem(Address is given vault Vault) </B>
 
 rule
