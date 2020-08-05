@@ -22,8 +22,9 @@ configuration
     <M> .Set </M>     // Available transactions for reordering
     <S> .Map </S>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
     <B> .List </B>
-  	<P> .Map </P>
-	  <V> .Map </V> // Mapping of Maker Vault to Owner
+    <P> .Map </P>
+    <V> .Map </V> // Mapping of Maker Vault to Owner
+    <N> 1 </N> // Number of transactions a miner can insert
 
     // Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
     rule <k> Address:ETHAddress in Token:ETHAddress gets _:Int ... </k>
@@ -44,5 +45,10 @@ configuration
 
     rule <k> B:Block S:Statement; => B ~> S ... </k>
     rule <k> S:Statement; => S ... </k>
+
+    // execution ends when nothing left to execute or txs to re-order
+    rule
+     <k> .K => DONE </k>
+     <M> .Set </M>
 
 endmodule

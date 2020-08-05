@@ -118,11 +118,6 @@ rule
      <V> ... Vault |-> (_ => Address)  ... </V>
      <B> ... .List => ListItem(Address is given vault Vault) </B>
 
-rule
-	 <k> .K => DONE </k>
-	 <M> .Set </M>
-
-
 endmodule
 
 	   

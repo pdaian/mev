@@ -7,12 +7,16 @@ BLANK_SPEC = """module BOUND
     imports MEV
     rule <k>
             %s
-        => .
+        => ?X
      </k>
     <S> .Map =>?S:Map </S>
-    <M> .Set => .Set </M>
-    <B> .List => ?A2 </B>
-    ensures %s
+    <M> .Set => ?_:Set </M>
+    <B> .List => ?_ </B>
+    <P> .Map => ?_ </P>
+    <V> .Map => ?_ </V>
+    <N> 1 => ?_ </N>
+
+    ensures (?X ==K DONE andBool(%s)) orBool (?X ==K FAIL)
 endmodule
 """
 
