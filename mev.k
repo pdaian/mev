@@ -2,17 +2,11 @@ require "uniswap.k"
 require "maker.k"
 
 module MEV-SYNTAX
+    imports UNISWAP-SYNTAX
     imports MAKER-SYNTAX
-	// syntax ETHAddress ::= "Miner"
 endmodule
 
 module MEV
+    imports UNISWAP
     imports MAKER
-	//configuration
-	//<Top>
-	//  <uniswap/>
-	//  <exec/>
-	//  <maker/>
-	//</Top>
-	
 endmodule

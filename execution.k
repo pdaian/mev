@@ -18,15 +18,14 @@ module EXECUTION
     imports DOMAINS
 
 configuration
-//    <exec>
     <k color="green"> $PGM:Block </k>       // Instructions left to execute
     <M> .Set </M>     // Available transactions for reordering
     <S> .Map </S>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
     <B> .List </B>
-	<P> .Map </P>
-	<V> .Map </V> // Mapping of Maker Vault to Owner
-//    </exec>
-	// Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
+  	<P> .Map </P>
+	  <V> .Map </V> // Mapping of Maker Vault to Owner
+
+    // Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
     rule <k> Address:ETHAddress in Token:ETHAddress gets _:Int ... </k>
          <S> B => B[(Address in Token) <- 0:Int] </S> requires notBool((Address in Token) in keys(B))
 
@@ -37,8 +36,8 @@ configuration
     rule <k> TX:ETHTransaction => .K ... </k>
          <M> ... .Set => SetItem(TX) </M>
 
-	// Tx censoring
-    //rule <k> TX:ETHTransaction => .K ... </k>
+    // TX Censoring
+    rule <k> TX:ETHTransaction => .K ... </k>
 
     rule <k> .K => exec(TX) </k>
          <M> ... SetItem(TX:ETHTransaction) => .Set ... </M>
