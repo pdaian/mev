@@ -22,9 +22,11 @@ configuration
     <M> .Set </M>     // Available transactions for reordering
     <S> .Map </S>             // System state; mapping of all (Address in Token) to Balance (all type Integer)
     <B> .List </B>
+  	<P> .Map </P>
+	  <V> .Map </V> // Mapping of Maker Vault to Owner
 
     // Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
-    rule <k> Address:ETHAddress in Token:ETHAddress gets Amount:Int ... </k>
+    rule <k> Address:ETHAddress in Token:ETHAddress gets _:Int ... </k>
          <S> B => B[(Address in Token) <- 0:Int] </S> requires notBool((Address in Token) in keys(B))
 
     rule <k> Address:ETHAddress in Token:ETHAddress gets Amount:Int => .K ... </k>
@@ -34,6 +36,7 @@ configuration
     rule <k> TX:ETHTransaction => .K ... </k>
          <M> ... .Set => SetItem(TX) </M>
 
+    // TX Censoring
     rule <k> TX:ETHTransaction => .K ... </k>
 
     rule <k> .K => exec(TX) </k>
