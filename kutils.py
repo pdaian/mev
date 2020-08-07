@@ -1,7 +1,5 @@
 from subprocess import Popen, PIPE
-import re
-import random
-
+import re, random, os
 
 BLANK_SPEC = """module BOUND
     imports MEV
@@ -47,4 +45,16 @@ def find_integer_bound(program, outfile, bound_clause, starting_value):
         print("-" * 15, "\nBETTER BOUND:", bound)
         previous_output = output
     print("All done :)")
+
+
+def get_final_configuration(program):
+    os.system('kompile mev.k --backend llvm') # use llvm backend for faster execution
+    open('torun.mev', 'w').write(program)
+    pipe = Popen("krun torun.mev", shell=True, stdout=PIPE, stderr=PIPE)
+    output = pipe.stdout.read() + pipe.stderr.read()
+    output = str(output, "utf-8")
+
+    print("K OUTPUT")
+    print(output)
+
 

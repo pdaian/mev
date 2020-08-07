@@ -8,6 +8,7 @@ module EXECUTION-SYNTAX
 
     syntax Statement ::= ETHAddress "in" ETHAddress "gets" Int // set token balance
                     | ETHTransaction
+                    | "DONE" | "FAIL"
 
     syntax Block ::= Statement ";"
                     | Block Statement ";"

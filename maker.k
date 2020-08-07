@@ -27,10 +27,6 @@ module MAKER
 
 // TODO : add stability fees (interest)
 
-syntax Statement ::= "DONE"
-	   			 	 | "FAIL"
-
-
 rule
 	 <k> exec(Address:ETHAddress opens vault Vault:ETHAddress) => .K </k>
      <V> V => V[(Vault) <- Address:ETHAddress] </V>
