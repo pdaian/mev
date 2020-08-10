@@ -1,24 +1,24 @@
 require "uniswap.k"
 
 module MAKER-SYNTAX
-	   imports UNISWAP-SYNTAX
+       imports UNISWAP-SYNTAX
 
-	   syntax MakerTX ::= ETHAddress "opens vault" ETHAddress
-	   | ETHAddress "locks" Int "collateral to vault" ETHAddress
-	   | ETHAddress "draws" Int "debt from vault" ETHAddress
-	   | ETHAddress "wipes" Int "debt from vault" ETHAddress
-	   | ETHAddress "frees" Int "collateral from vault" ETHAddress
-	   | ETHAddress "bites vault" ETHAddress
-	   | ETHAddress "is given vault" ETHAddress
-	   
+       syntax MakerTX ::= ETHAddress "opens vault" ETHAddress
+       | ETHAddress "locks" Int "collateral to vault" ETHAddress
+       | ETHAddress "draws" Int "debt from vault" ETHAddress
+       | ETHAddress "wipes" Int "debt from vault" ETHAddress
+       | ETHAddress "frees" Int "collateral from vault" ETHAddress
+       | ETHAddress "bites vault" ETHAddress
+       | ETHAddress "is given vault" ETHAddress
+       
        syntax ETHTransaction ::= MakerTX
        syntax ETHAddress ::= "SAI"
 
 endmodule
 
 module MAKER
-	   imports MAKER-SYNTAX
-	   imports UNISWAP
+       imports MAKER-SYNTAX
+       imports UNISWAP
 
     //configuration
     //<maker>
@@ -28,7 +28,7 @@ module MAKER
 // TODO : add stability fees (interest)
 
 rule
-	 <k> exec(Address:ETHAddress opens vault Vault:ETHAddress) => .K </k>
+     <k> exec(Address:ETHAddress opens vault Vault:ETHAddress) => .K </k>
      <V> V => V[(Vault) <- Address:ETHAddress] </V>
      <S> B => B[(Vault in 0) <- 0:Int][(Vault in SAI) <- 0:Int] </S> 
      <B> ... .List => ListItem(Address opens vault Vault) </B>
@@ -36,8 +36,8 @@ rule
 
 rule
      <k> exec(Address:ETHAddress locks Amount:Int collateral to vault Vault:ETHAddress) =>
-     	 Address in 0 gets (0 -Int Amount) ~>
-		 Vault in 0 gets Amount
+         Address in 0 gets (0 -Int Amount) ~>
+         Vault in 0 gets Amount
      </k>  
      <V> ... Vault |-> Address ... </V>
      <B> ... .List => ListItem(Address locks Amount collateral to vault Vault) </B>
@@ -45,7 +45,7 @@ rule
 rule
      <k> exec(Address:ETHAddress draws Amount:Int debt from vault Vault:ETHAddress) =>
          Address in SAI gets Amount ~>
-	 	 Vault in SAI gets Amount
+         Vault in SAI gets Amount
      </k>  
      <V> ... Vault |-> Address ... </V>
      <P> ... (0 , SAI) |-> Px ... </P>
@@ -56,7 +56,7 @@ rule
 rule
      <k> exec(Address:ETHAddress frees Amount:Int collateral from vault Vault:ETHAddress) =>
          Address in 0 gets Amount ~>
-	 	 Vault in 0 gets (0 -Int Amount)
+         Vault in 0 gets (0 -Int Amount)
      </k>  
      <V> ... Vault |-> Address ... </V>
      <P> ... (0 , SAI) |-> Px ... </P>
@@ -67,7 +67,7 @@ rule
 rule
      <k> exec(Address:ETHAddress wipes Amount:Int debt from vault Vault:ETHAddress) =>
          Address in SAI gets (0 -Int Amount) ~>
-		 Vault in SAI gets (0 -Int Amount)
+         Vault in SAI gets (0 -Int Amount)
      </k>  
      <V> ... Vault |-> Address ... </V>
      <S> ... (Vault in SAI) |-> TotalDebt  ... </S>
@@ -77,9 +77,9 @@ rule
 rule
      <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) =>
          Vault in SAI gets (0 -Int TotalDebt) ~>
-	 	 Vault in 0 gets 0 -Int ((130 *Int TotalDebt) /Int (Px *Int 100)) ~> // 30% penalty
-	 	 Address in SAI gets TotalDebt ~>
-	 	 Address in 0 gets (0 -Int ((90 *Int TotalDebt) /Int (Px *Int 100)) ) //10% discount
+         Vault in 0 gets 0 -Int ((130 *Int TotalDebt) /Int (Px *Int 100)) ~> // 30% penalty
+         Address in SAI gets TotalDebt ~>
+         Address in 0 gets (0 -Int ((90 *Int TotalDebt) /Int (Px *Int 100)) ) //10% discount
      </k>  
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
@@ -96,12 +96,12 @@ rule
      <B> ... .List => ListItem(FAIL) </B>
 
 rule
-	 <k> exec(_ locks _ collateral to vault _) => FAIL </k>
+     <k> exec(_ locks _ collateral to vault _) => FAIL </k>
      <B> ... .List => ListItem(FAIL) </B>
 
 
 rule
-	 <k> exec(_ opens vault _) => FAIL </k>
+     <k> exec(_ opens vault _) => FAIL </k>
      <B> ... .List => ListItem(FAIL) </B>
 
 rule
@@ -116,4 +116,4 @@ rule
 
 endmodule
 
-	   
+       

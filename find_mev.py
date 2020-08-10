@@ -33,7 +33,7 @@ def find_mev_cdp(program, outfile, starting_value, end_value):
         output = str(output, "utf-8")
         print(output)
         if "#True" not in output:
-            print("MEV FOUND!", bound)
+            print("MEV FOUND!")
             print("Writing MEV configuration to", outfile, "...")
             open(outfile, "w").write(output)
             return
