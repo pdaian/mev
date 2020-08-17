@@ -11,7 +11,7 @@ BLANK_SPEC = """module BOUND
             %s
          => ?X
      </k>
-    <S> .Map =>?S:Map </S>
+    <S> ( (Uniswap in 0) |-> 13 (Uniswap in SAI) |-> 56 ) =>?S:Map </S>
     <M> .Set => ?_:Set </M>
     <B> .List => ?_ </B>
     <P> .Map => ?_ </P>
@@ -40,7 +40,7 @@ def find_mev_cdp(program, outfile, starting_value, end_value):
 
 def main():
     PROGRAM = open(sys.argv[1]).read()
-    find_mev_cdp(PROGRAM, "maker_mev.out", 1, 135)
+    find_mev_cdp(PROGRAM, "maker_mev.out", 155042, 155042)
 
 if __name__ == '__main__':
     main()
