@@ -11,7 +11,7 @@ BLANK_SPEC = """module BOUND
             %s
          => ?X
      </k>
-    <S> ( (Uniswap in 0) |-> 13 (Uniswap in SAI) |-> 56 ) =>?S:Map </S>
+    <S> ( (Uniswap in 0) |-> 2145594386963123929088 (Uniswap in SAI) |-> 289317379249580594429952 ) =>?S:Map </S>
     <M> .Set => ?_:Set </M>
     <B> .List => ?_ </B>
     <P> .Map => ?_ </P>

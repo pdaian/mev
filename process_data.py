@@ -14,7 +14,7 @@ block_number = 0
 
 uniswap = Uniswap()
 line_num = 0
-'''
+
 for line in fin.readlines():
     line_num += 1
     if 'block' in line:
@@ -26,6 +26,7 @@ for line in fin.readlines():
         config = uniswap.config()
     elif block_number <= int(sys.argv[3]):
         fout.write(line)
+
 '''
 for line in fin.readlines():
     line_num += 1
@@ -34,7 +35,9 @@ for line in fin.readlines():
         config = uniswap.config()
     elif line_num <= int(sys.argv[3]):
         fout.write(line)
+'''
 
 price = config['SAI']/ config['0']
-print(config)
+print("Uniswap in 0", "{:.0f}".format(config['0']))
+print("Uniswap in SAI", "{:.0f}".format(config['SAI']))
 print(price)
