@@ -1,4 +1,4 @@
-module BOUND
+module BOUNDMAKER
     imports MEV
     rule <k>
             0 in 0 gets 0;

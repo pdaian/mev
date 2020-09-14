@@ -1,0 +1,11 @@
+            0 in 0 gets 0;
+            0 in SAI gets 0;
+1 in 0 gets 100000000;
+Uniswap in 0 gets 5;
+Uniswap in SAI gets 500;
+GetPrice 0 SAI;
+1 opens vault 2;
+1 locks 6 collateral to vault 2;
+1 draws 6 debt from vault 2;
+1 in 0 swaps 40 input for SAI fee 5;
+0 bites vault 2;

@@ -1,0 +1,9 @@
+            0 in 0 gets 0;
+            0 in SAI gets 0;
+            1 opens vault 101;
+			1 locks 5 collateral to vault 101;
+			2 is given vault 101;
+			2 draws 500 debt from vault 101;
+            0 bites vault 101 ;
+			1 adds 200 tokens and 1 eth of liquidity to SAI;
+			1 adds 100 tokens and 2 eth of liquidity to SAI;
