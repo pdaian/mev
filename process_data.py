@@ -20,6 +20,7 @@ def get_price(cfg):
 def bootstrapped_data(f, cfg, rows):
     f.write("Uniswap in 0 gets {:.0f};\n".format(cfg['0']))
     f.write("Uniswap in SAI gets {:.0f};\n".format(cfg['SAI']))
+    f.write("GetPrice SAI 0;\n")
     for row in rows:
         f.write(row)
 

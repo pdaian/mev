@@ -28,7 +28,7 @@ module MAKER
 // TODO : add stability fees (interest)
 
 rule
-     <k> exec(Address:ETHAddress opens vault Vault:ETHAddress) => .K </k>
+     <k> exec(Address:ETHAddress opens vault Vault:ETHAddress) => .K ... </k>
      <V> V => V[(Vault) <- Address:ETHAddress] </V>
      <S> B => B[(Vault in 0) <- 0:Int][(Vault in SAI) <- 0:Int] </S> 
      <B> ... .List => ListItem(Address opens vault Vault) </B>
@@ -36,7 +36,7 @@ rule
 
 
 rule
-     <k> exec(Address:ETHAddress opens vault Vault:ETHAddress) => FAIL </k>
+     <k> exec(Address:ETHAddress opens vault Vault:ETHAddress) => FAIL ... </k>
      <V> V  </V>
      <S> B  </S>
      <B> ... .List => ListItem(Address opens vault Vault) </B>
@@ -49,12 +49,12 @@ rule
      <k> exec(Address:ETHAddress locks Amount:Int collateral to vault Vault:ETHAddress) =>
          Address in 0 gets (0 -Int Amount) ~>
          Vault in 0 gets Amount
-     </k>  
+     ... </k>  
      <V> ... Vault |-> Address ... </V>
      <B> ... .List => ListItem(Address locks Amount collateral to vault Vault) </B>
 
 rule
-     <k> exec(Address:ETHAddress locks Amount:Int collateral to vault Vault:ETHAddress) => FAIL </k>
+     <k> exec(Address:ETHAddress locks Amount:Int collateral to vault Vault:ETHAddress) => FAIL ... </k>
      <V> V  </V>
      <B> ... .List => ListItem(Address locks Amount collateral to vault Vault) </B>
      requires notBool( Vault in keys(V) )
@@ -66,7 +66,7 @@ rule
      <k> exec(Address:ETHAddress draws Amount:Int debt from vault Vault:ETHAddress) =>
          Address in SAI gets Amount ~>
          Vault in SAI gets Amount
-     </k>  
+     ... </k>  
      <V> ... Vault |-> Address ... </V>
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
@@ -74,7 +74,7 @@ rule
      requires TotalCollateral *Int Px *Int 100 >=Int 150 *Int (TotalDebt +Int Amount)
 
 rule
-     <k> exec(Address:ETHAddress draws Amount:Int debt from vault Vault:ETHAddress) => FAIL </k>
+     <k> exec(Address:ETHAddress draws Amount:Int debt from vault Vault:ETHAddress) => FAIL ... </k>
      <V> V </V>
      <P> P </P>
      <S> S </S>
@@ -83,7 +83,7 @@ rule
 
 
 rule
-     <k> exec(Address:ETHAddress draws Amount:Int debt from vault Vault:ETHAddress) => FAIL </k>
+     <k> exec(Address:ETHAddress draws Amount:Int debt from vault Vault:ETHAddress) => FAIL ... </k>
      <V> ... Vault |-> Address ... </V>
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
@@ -97,7 +97,7 @@ rule
      <k> exec(Address:ETHAddress frees Amount:Int collateral from vault Vault:ETHAddress) =>
          Address in 0 gets Amount ~>
          Vault in 0 gets (0 -Int Amount)
-     </k>  
+     ... </k>  
      <V> ... Vault |-> Address ... </V>
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
@@ -107,7 +107,7 @@ rule
 
 rule
      <k> exec(Address:ETHAddress frees Amount:Int collateral from vault Vault:ETHAddress) => FAIL
-     </k>
+     ... </k>
      <V> V </V>
      <P> P </P>
      <S> S </S>
@@ -116,7 +116,7 @@ rule
 
 rule
      <k> exec(Address:ETHAddress frees Amount:Int collateral from vault Vault:ETHAddress) => FAIL
-     </k>
+     ... </k>
      <V> ... Vault |-> Address ... </V>
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
@@ -130,21 +130,21 @@ rule
      <k> exec(Address:ETHAddress wipes Amount:Int debt from vault Vault:ETHAddress) =>
          Address in SAI gets (0 -Int Amount) ~>
          Vault in SAI gets (0 -Int Amount)
-     </k>  
+     ... </k>  
      <V> ... Vault |-> Address ... </V>
      <S> ... (Vault in SAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(Address wipes Amount debt from vault Vault) </B>
      requires (TotalDebt >=Int Amount)
 
 rule
-     <k> exec(Address:ETHAddress wipes Amount:Int debt from vault Vault:ETHAddress) => FAIL </k>
+     <k> exec(Address:ETHAddress wipes Amount:Int debt from vault Vault:ETHAddress) => FAIL ... </k>
      <V> V </V>
      <S> S </S>
      <B> ... .List => ListItem(Address wipes Amount debt from vault Vault) </B>
      requires notBool((Vault in keys(V)) andBool ((Vault in SAI) in keys(S)))
 
 rule
-     <k> exec(Address:ETHAddress wipes Amount:Int debt from vault Vault:ETHAddress) => FAIL </k>  
+     <k> exec(Address:ETHAddress wipes Amount:Int debt from vault Vault:ETHAddress) => FAIL ... </k>  
      <V> ... Vault |-> Address ... </V>
      <S> ... (Vault in SAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(Address wipes Amount debt from vault Vault) </B>
@@ -159,21 +159,21 @@ rule
          Vault in 0 gets 0 -Int ((130 *Int TotalDebt) /Int (Px *Int 100)) ~> // 30% penalty
          Address in SAI gets TotalDebt ~>
          Address in 0 gets (0 -Int ((90 *Int TotalDebt) /Int (Px *Int 100)) ) //10% discount
-     </k>  
+     ... </k>  
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(Address bites vault Vault) </B>
      requires (TotalCollateral *Int Px *Int 100 <Int 150 *Int TotalDebt) andBool (Px >Int 0)
 
 rule
-     <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) => FAIL </k>
+     <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) => FAIL ... </k>
      <P> P </P>
      <S> S </S>
      <B> ... .List => ListItem(Address bites vault Vault) </B>
      requires notBool ( ( (0 , SAI) in keys(P)  ) andBool ((Vault in 0) in keys(S)) andBool ((Vault in SAI) in keys(S)))
 
 rule
-     <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) => FAIL </k>  
+     <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) => FAIL ... </k>  
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(Address bites vault Vault) </B>
@@ -183,12 +183,12 @@ rule
 
 
 rule
-     <k> exec(Address:ETHAddress is given vault Vault:ETHAddress) => .K </k>
+     <k> exec(Address:ETHAddress is given vault Vault:ETHAddress) => .K ... </k>
      <V> ... Vault |-> (_ => Address)  ... </V>
      <B> ... .List => ListItem(Address is given vault Vault) </B>
 
 rule
-     <k> exec(Address:ETHAddress is given vault Vault:ETHAddress) => FAIL </k>
+     <k> exec(Address:ETHAddress is given vault Vault:ETHAddress) => FAIL ... </k>
      <V> V </V>
      <B> ... .List => ListItem(Address is given vault Vault) </B>
      requires notBool(Vault in keys(V))
