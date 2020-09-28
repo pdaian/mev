@@ -25,6 +25,8 @@ BLANK_SPEC = """module BOUND
     <B> .List => ?_ </B>
     <P> .Map => ?_ </P>
     <V> .Map => ?_ </V>
+    <N> 0 => ?_:Int </N>
+    <C> 0 => ?_:Int </C>
     ensures ( ({?S[0 in SAI]}:>Int <=Int 0) andBool ?X ==K DONE) orBool (?X ==K FAIL)
 endmodule
 """

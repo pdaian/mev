@@ -18,6 +18,10 @@ module UNISWAP
     imports UNISWAP-SYNTAX
     imports EXECUTION
 
+    rule <k> TX:UniswapTX fee F => .K ... </k>
+         <M> ... .Set => SetItem(TX fee F serial Curr) </M>
+         <N> Curr => Curr +Int 1 </N>
+
     rule <k> exec(Address:ETHAddress in TokenIn:ETHAddress swaps TradeAmount:Int input for TokenOut:ETHAddress fee GasFee:Int)  => 
             Address in TokenIn gets 0 -Int TradeAmount ~>
             Address in TokenOut gets (997 *Int TradeAmount *Int USwapBalanceOut) /Int (1000 *Int USwapBalanceIn +Int 997 *Int TradeAmount) ~>

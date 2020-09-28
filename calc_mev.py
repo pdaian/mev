@@ -13,6 +13,8 @@ BLANK_SPEC = """module CALCBOUND
     <B> .List => ?Y2:List </B>
     <P> .Map => ?Y3:Map </P>
     <V> .Map => ?Y4:Map </V>
+    <N> 0 => ?_:Int </N>
+    <C> 0 => ?_:Int </C>
     ensures ( ({?Y0[0 in SAI]}:>Int <=Int 0) andBool ?X ==K DONE) orBool (?X ==K FAIL)
 endmodule
 """

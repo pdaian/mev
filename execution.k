@@ -1,10 +1,10 @@
 module EXECUTION-SYNTAX
     imports DOMAINS-SYNTAX
 
+    syntax TaggedTransaction ::= ETHTransaction "serial" Int
     syntax Executable ::= "exec(" ETHTransaction ")"
     syntax ETHTransaction ::= ETHTransaction "fee" Int
                               | ETHTransaction "block" Int
-    
     syntax ETHAddress ::= Int | "ETH"
     syntax BalanceEntry ::= ETHAddress "in" ETHAddress
 
@@ -28,7 +28,8 @@ configuration
     <B> .List </B>
     <P> .Map </P>
     <V> .Map </V> // Mapping of Maker Vault to Owner
-    <N> 1 </N> // Number of transactions a miner can insert
+    <N> 0 </N> // Number of transactions tagged
+    <C> 0 </C> // Number of transactions untagged
 
     // Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
     rule <k> Address:ETHAddress in Token:ETHAddress gets _:Int ... </k>
@@ -38,14 +39,17 @@ configuration
          <S> ... (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </S> 
          //requires (Amount >=Int (0 -Int OldBalance))
 
-    rule <k> TX:ETHTransaction => .K ... </k>
-         <M> ... .Set => SetItem(TX) </M>
 
     // TX Censoring
     // rule <k> _:ETHTransaction => .K ... </k>
 
     rule <k> .K => exec(TX) </k>
-         <M> ... SetItem(TX:ETHTransaction) => .Set ... </M>
+         <M> ... SetItem(TX:ETHTransaction serial N:Int) => .Set ... </M>
+         <C> Curr => Curr +Int 1 </C>
+         requires (N >=Int 0) andBool ( (N /Int 2) *Int 2 <=Int Curr )
+
+    rule <k> .K => exec(TX) </k>
+         <M> ... SetItem(TX:ETHTransaction serial -1) => .Set ... </M>
 
     rule <k> B:Block S:Statement; => B ~> S ... </k>
     rule <k> S:Statement; => S ... </k>

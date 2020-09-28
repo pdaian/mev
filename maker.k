@@ -20,10 +20,10 @@ module MAKER
        imports MAKER-SYNTAX
        imports UNISWAP
 
-    //configuration
-    //<maker>
-    //<V> .Map </V> // Mapping of Maker Vault to Owner
-    //</maker>
+    rule <k> TX:MakerTX => .K ... </k>
+         <M> ... .Set => SetItem(TX serial -1) </M>
+//         <M> ... .Set => SetItem(TX serial Curr) </M>
+//         <N> Curr => Curr +Int 1 </N>
 
 // TODO : add stability fees (interest)
 
