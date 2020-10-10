@@ -1,12 +1,9 @@
-require "uniswap.k"
-require "maker.k"
+require "uniswapv2.k"
 
 module MEV-SYNTAX
-    imports UNISWAP-SYNTAX
-    imports MAKER-SYNTAX
+    imports UNISWAPV2-SYNTAX
 endmodule
 
 module MEV
-    imports UNISWAP
-    imports MAKER
+    imports UNISWAPV2
 endmodule

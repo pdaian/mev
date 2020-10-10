@@ -38,14 +38,16 @@ configuration
          <S> ... (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </S> 
          //requires (Amount >=Int (0 -Int OldBalance))
 
-    rule <k> TX:ETHTransaction => .K ... </k>
-         <M> ... .Set => SetItem(TX) </M>
+//    rule <k> TX:ETHTransaction => .K ... </k>
+//         <M> ... .Set => SetItem(TX) </M>
 
     // TX Censoring
     // rule <k> _:ETHTransaction => .K ... </k>
 
-    rule <k> .K => exec(TX) </k>
-         <M> ... SetItem(TX:ETHTransaction) => .Set ... </M>
+//    rule <k> .K => exec(TX) </k>
+//         <M> ... SetItem(TX:ETHTransaction) => .Set ... </M>
+
+    rule <k> TX:ETHTransaction => exec(TX) ... </k>
 
     rule <k> B:Block S:Statement; => B ~> S ... </k>
     rule <k> S:Statement; => S ... </k>
