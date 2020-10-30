@@ -5,4 +5,4 @@ mev-kompiled
 __pycache__
 *~
 *.pyc
-
+*.nohup
