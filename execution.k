@@ -28,6 +28,7 @@ configuration
     <B> .List </B>
     <P> .Map </P>
     <V> .Map </V> // Mapping of Maker Vault to Owner
+    <R> .Map </R> // Stability fees for Maker
     <N> 1 </N> // Number of transactions a miner can insert
 
     // Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
