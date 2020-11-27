@@ -66,7 +66,7 @@ for txhash in txhashes:
                 subaction2 = "%d in %d debt wiped" % (0 - debt_amount, debt_type)
             else:
                 subaction2 = "%d in %d debt drawn"  % (debt_amount, debt_type)
-                action_requested = "%s and %s from vault %d ;" % (subaction1, subaction2, cdp_handler)
+            action_requested = "%s and %s from vault %d ;" % (subaction1, subaction2, cdp_handler)
         elif topics[0][:10] == interested_topics[1]:
             # Liquidate CDP
             if len(topics) < 3:
