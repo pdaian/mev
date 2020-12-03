@@ -52,6 +52,7 @@ parser.add_argument(
     required=True
 )
 
+
 #sai_token_address = '89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
 dai_token_address = 'a478c2975ab1ea89e8196811f51a7b7ade33eb11'
 #sai_token = '786821374916005576892310737142965798721793950553'
@@ -74,6 +75,69 @@ reserves = pd.read_csv('data-scripts/%s-reserves.csv' % (exchange_name))
 
 mcd_fees_data = pd.read_csv('maker-data/mcd/maker_fees.csv')
 
+if exchange_name == 'uniswapv2':
+    acc = 'UniswapV2'
+
+def get_mcd_rate(given_block):
+    pre_fees_data = mcd_fees_data[mcd_fees_data.Block < int(given_block)]
+    if len(pre_fees_data) < 1:
+        pre_fees = 0
+    else:
+        pre_fees_data = pre_fees_data.iloc[-1]
+        pre_fees = pre_fees_data.FeesInc
+    return int(pre_fees)
+    
+def get_uniswap_reserves(given_block):
+    balances = {collateral_token:0, 'DAI':0}
+
+    pre_reserve = reserves[(reserves.Address == args.address) & (reserves.Block <  int(given_block))]
+    if len(pre_reserve) < 1:
+        return balances
+    else:
+        tokens = (str(pre_reserve.iloc[0]['Token0']).replace(dai_token, 'DAI'), str(pre_reserve.iloc[0]['Token1']).replace(dai_token, 'DAI'))
+        pre_reserve = pre_reserve.iloc[-1]
+        return  {tokens[0] : int(pre_reserve.Reserve0), tokens[1]: int(pre_reserve.Reserve1)}
+
+def kint(x):
+    if x >= 0:
+        return "gets %d" % (x)
+    else:
+        return "gives %d" % (0-x)
+
+
+def get_mcd_prologue(mcd_transactions, start_block):
+    mcd_transactions = mcd_transactions.split('\n')
+    mcd_prologue = ''
+    rate = 0
+    balances = {collateral_token: 0, 'DAI': 0}
+    curr_block = 0
+    for transaction in mcd_transactions:
+        transaction = transaction.strip()
+        if 'block' in transaction:
+            curr_block = int(transaction.split()[-1])
+            if curr_block >= start_block:
+                break
+        elif 'vault' in transaction:
+            curr_balances = get_uniswap_reserves(curr_block)
+            curr_rate = get_mcd_rate(curr_block)
+            mcd_prologue +=  """{acc} in {token0} {balance0} ;
+            {acc} in {token1} {balance1} ;
+            {fee_inc} increment in stability fees for {token1} ;
+            {tx}
+            """.format(acc=acc, token0='DAI', token1=collateral_token, balance0=kint(curr_balances['DAI'] - balances['DAI']), balance1=kint(curr_balances[collateral_token]-balances[collateral_token]),tx=transaction, fee_inc = curr_rate - rate)
+            balances = curr_balances
+            rate = curr_rate
+    curr_balances = get_uniswap_reserves(start_block)
+    curr_rate = get_mcd_rate(start_block)
+    mcd_prologue +=  """{acc} in {token0} {balance0} ;
+    {acc} in {token1} {balance1} ;
+    GetPrice {token0} {token1} ;
+    {fee_inc} increment in stability fees for {token1} ;
+    """.format(acc=acc, token0='DAI', token1=collateral_token, balance0=kint(curr_balances['DAI'] - balances['DAI']), balance1=kint(curr_balances[collateral_token]-balances[collateral_token]), fee_inc = curr_rate - rate)
+    balances = curr_balances
+    rate = curr_rate
+    return mcd_prologue
+
 
 # TODO : check if exists
 transactions_filepath = 'data-scripts/' + exchange_name + '-processed/' + args.address + '.csv'
@@ -88,38 +152,11 @@ for block in range(int(args.start_block), int(args.end_block) + 1):
 #maker_transactions_filepath = 'maker-data/maker_data.txt'
 mcd_transactions_filepath = 'maker-data/mcd/maker-processed/%s.csv' % (collateral_type)
 
-pipe = Popen('grep "vault ' + args.cdp + '" ' + mcd_transactions_filepath, shell=True, stdout=PIPE, stderr=PIPE)
+pipe = Popen('grep -B 1 "vault ' + args.cdp + '" ' + mcd_transactions_filepath, shell=True, stdout=PIPE, stderr=PIPE)
 mcd_transactions = pipe.stdout.read() + pipe.stderr.read()
 mcd_transactions = str(mcd_transactions, "utf-8")
 
 
-#post_reserve = reserves[(reserves.Address == args.address) & (reserves.Block ==  int(args.end_block))]
-#post_price = (int(post_reserve.Reserve1) // int(post_reserve.Reserve0) , int(post_reserve.Reserve0) // int(post_reserve.Reserve1) )
-post_price = (0, 0) #TODO : handle properly
-
-balances = (0,0)
-
-pre_reserve = reserves[(reserves.Address == args.address) & (reserves.Block <  int(args.start_block))]
-tokens = (str(pre_reserve.iloc[0]['Token0']).replace(dai_token, 'DAI'), str(pre_reserve.iloc[0]['Token1']).replace(dai_token, 'DAI'))
-if len(pre_reserve) < 1:
-    pre_price = (0,0) # TODO : subtle issue wrt MEV here
-else:
-    pre_reserve = pre_reserve.iloc[-1]
-    pre_price = (int(pre_reserve.Reserve1) // int(pre_reserve.Reserve0) , int(pre_reserve.Reserve0) // int(pre_reserve.Reserve1) )
-    balances = (int(pre_reserve.Reserve0), int(pre_reserve.Reserve1))
-
-logger.info(pre_reserve)
-
-pre_fees_data = mcd_fees_data[mcd_fees_data.Block < int(args.start_block)]
-if len(pre_fees_data) < 1:
-    pre_fees = 0
-else:
-    pre_fees_data = pre_fees_data.iloc[-1]
-    pre_fees = pre_fees_data.FeesInc
-    
-
-if exchange_name == 'uniswapv2':
-    acc = 'UniswapV2'
 
 identifier = args.cdp + '-' + args.start_block + '-' + args.end_block + '-' + args.address
     
@@ -129,19 +166,11 @@ outfile = 'run-output/'+ identifier +'.out'
 
 
 # replace address w/ semantics keyword
-amm_transactions = amm_transactions.replace(dai_token, 'DAI')
-mcd_transactions = mcd_transactions.replace(dai_token, 'DAI').replace(collateral_type, collateral_token)
+amm_transactions = amm_transactions.replace(dai_token, 'DAI').strip()
+mcd_transactions = mcd_transactions.replace(dai_token, 'DAI').replace(collateral_type, collateral_token).strip()
 
 
-mcd_transactions = mcd_transactions.split('\n')
-
-# censor on-chain liquidation tx
-
-mcd_transactions = filter(lambda x: 'bites' not in x, mcd_transactions)
-
-#maker_prologue = '\n'.join(filter(lambda x: 'opens' in x, transactions))
-mcd_prologue = '\n'.join(mcd_transactions)
-mcd_prologue = '%s increment in stability fees for %s ;\n' %(pre_fees, collateral_token) + mcd_prologue
+mcd_prologue = get_mcd_prologue(mcd_transactions, int(args.start_block))
 
 mcd_epilogue = ''
 
@@ -153,4 +182,4 @@ logger.info(transactions)
 
 logger.info(mcd_epilogue)
     
-reordering_mev(transactions, spec_file, outfile, acc, tokens, balances, pre_price, post_price, args.address, mcd_prologue, mcd_epilogue)
+reordering_mev(transactions, spec_file, outfile, acc, args.address, mcd_prologue, mcd_epilogue)

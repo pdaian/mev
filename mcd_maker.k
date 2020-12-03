@@ -1,4 +1,4 @@
-require "uniswapv2.k"
+require "uniswapv2.k" 
 
 module MAKER-SYNTAX
        imports UNISWAPV2-SYNTAX
@@ -72,6 +72,18 @@ rule
 
 
 rule
+     <k> exec(CAmount:Int in CAddress:ETHAddress collateral locked and DAmount:Int in DAI debt drawn from vault Vault:ETHAddress) =>
+     Vault in CAddress gets CAmount ~>
+     Vault in DAI gets DAmount
+     ...
+     </k>
+     <V> ... Vault |-> CAddress ... </V>
+     <P> P:Map </P>
+     <B> ... .List => ListItem(CAmount in CAddress collateral locked and DAmount in DAI debt drawn from vault Vault) </B>
+     requires notBool((CAddress , DAI) in keys(P))
+
+
+rule
      <k> exec(CAmount:Int in CAddress:ETHAddress collateral freed and DAmount:Int in DAI debt wiped from vault Vault:ETHAddress) =>
      Vault in CAddress gets (0 -Int CAmount) ~>
      Vault in DAI gets (0 -Int DAmount)
@@ -83,6 +95,17 @@ rule
      <S> ... (Vault in CAddress) |-> TotalCollateral (Vault in DAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(CAmount in CAddress collateral freed and DAmount in DAI debt wiped from vault Vault) </B>
      requires ((TotalCollateral -Int CAmount) *Int Px *Int 100 *Int 1000000000000000000000000000 >=Int 150 *Int Rate *Int (TotalDebt -Int DAmount)) andBool (TotalDebt >=Int DAmount)
+
+rule
+     <k> exec(CAmount:Int in CAddress:ETHAddress collateral freed and DAmount:Int in DAI debt wiped from vault Vault:ETHAddress) =>
+     Vault in CAddress gets (0 -Int CAmount) ~>
+     Vault in DAI gets (0 -Int DAmount)
+     ...
+     </k>
+     <V> ... Vault |-> CAddress ... </V>
+     <P> P:Map </P>
+     <B> ... .List => ListItem(CAmount in CAddress collateral freed and DAmount in DAI debt wiped from vault Vault) </B>
+     requires notBool((CAddress , DAI) in keys(P))
 
 
 
@@ -98,6 +121,18 @@ rule
      <S> ... (Vault in CAddress) |-> TotalCollateral (Vault in DAI) |-> TotalDebt  ... </S>
      <B> ... .List => ListItem(CAmount in CAddress collateral freed and DAmount in DAI debt drawn from vault Vault) </B>
      requires (TotalCollateral -Int CAmount) *Int Px *Int 100 *Int 1000000000000000000000000000 >=Int 150 *Int Rate *Int (TotalDebt +Int DAmount)
+
+
+rule
+     <k> exec(CAmount:Int in CAddress:ETHAddress collateral freed and DAmount:Int in DAI debt drawn from vault Vault:ETHAddress) =>
+     Vault in CAddress gets (0 -Int CAmount) ~>
+     Vault in DAI gets DAmount
+     ...
+     </k>
+     <V> ... Vault |-> CAddress ... </V>
+     <P> P:Map </P>
+     <B> ... .List => ListItem(CAmount in CAddress collateral freed and DAmount in DAI debt drawn from vault Vault) </B>
+     requires notBool((CAddress , DAI) in keys(P))
 
 
 // TODO : use specific amount, sometimes fat finger limits the amount

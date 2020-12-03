@@ -9,9 +9,10 @@ module EXECUTION-SYNTAX
     syntax BalanceEntry ::= ETHAddress "in" ETHAddress
 
     syntax Statement ::= ETHAddress "in" ETHAddress "gets" Int // set token balance
-                    | ETHTransaction
-                    | "DONE" | "FAIL"
-                    | Executable
+                         | ETHAddress "in" ETHAddress "gives" Int // set token balance 
+                         | ETHTransaction     
+                         | "DONE" | "FAIL"
+                         | Executable
 
     syntax Block ::= Statement ";"
                     | Block Statement ";"
@@ -38,6 +39,9 @@ configuration
     rule <k> Address:ETHAddress in Token:ETHAddress gets Amount:Int => .K ... </k>
          <S> ... (Address in Token) |-> (OldBalance => (Amount +Int OldBalance)) ... </S> 
          //requires (Amount >=Int (0 -Int OldBalance))
+
+    rule <k> Address:ETHAddress in Token:ETHAddress gives Amount:Int => Address in Token gets (0 -Int Amount) ... </k>
+
 
 //    rule <k> TX:ETHTransaction => .K ... </k>
 //         <M> ... .Set => SetItem(TX) </M>
