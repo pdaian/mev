@@ -1,4 +1,4 @@
-import csv, csv_hack, os
+import csv, os
 import pandas as pd
 import logging
 
@@ -11,13 +11,13 @@ from exchanges import get_trade_data_from_log_item, get_uniswap_token, topics_fr
 
 exchange_name = 'uniswapv2'
 
-uniswapv2_logs = 'data/all_logs_uniswapv2.csv'
-sushiswap_logs = 'data/all_logs_sushiswap.csv'
+uniswapv2_logs = 'latest-data/all_logs_uniswapv2.csv'
+sushiswap_logs = 'latest-data/all_logs_sushiswap.csv'
 
 exchange_logs = {'uniswapv2' : uniswapv2_logs, 'sushiswap' : sushiswap_logs}
-outputdir = exchange_name + '-processed'
+outputdir = 'latest-data/' + exchange_name + '-processed'
 
-uniswapv2_pairs = pd.read_csv('data/uniswapv2_pairs.csv').set_index('pair')
+uniswapv2_pairs = pd.read_csv('latest-data/uniswapv2_pairs.csv').set_index('pair')
 
 logsdict = csv.DictReader(open(exchange_logs[exchange_name]), delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)

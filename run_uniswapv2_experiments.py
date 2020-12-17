@@ -7,8 +7,8 @@ from copy import deepcopy
 import pandas as pd
 import argparse
 import logging
-from find_mev_krun_uniswapv2 import reordering_mev
-#from find_mev_uniswapv2 import reordering_mev
+#from find_mev_krun_uniswapv2 import reordering_mev
+from find_mev_uniswapv2 import reordering_mev
 
 parser = argparse.ArgumentParser(description='Run UniswapV2 experiments')
 

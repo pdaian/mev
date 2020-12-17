@@ -52,8 +52,8 @@ parser.add_argument(
     required=True
 )
 
-#sai_token_address = 89d24a6b4ccb1b6faa2625fe562bdd9a23260359
-#sai_token = 786821374916005576892310737142965798721793950553
+sai_token_address = '89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
+sai_token = '786821374916005576892310737142965798721793950553'
 
 
 args = parser.parse_args()    
@@ -93,7 +93,7 @@ post_price = (0, 0) #TODO : handle properly
 balances = (0,0)
 
 pre_reserve = reserves[(reserves.Address == args.address) & (reserves.Block <  int(args.start_block))]
-tokens = (str(pre_reserve.iloc[0]['Token0']), str(pre_reserve.iloc[0]['Token1']))
+tokens = (str(pre_reserve.iloc[0]['Token0']).replace(sai_token, 'SAI'), str(pre_reserve.iloc[0]['Token1']).replace(sai_token, 'SAI'))
 if len(pre_reserve) < 1:
     pre_price = (0,0) # TODO : subtle issue wrt MEV here
 else:
@@ -112,8 +112,6 @@ spec_file = 'experiments-maker-'+ exchange_name+'/' + identifier + '/bound.k'
 outfile = 'output/'+ identifier +'.out'
 
 
-# move cdp opening transactions to prologue
-logger.info(transactions)
 
 
 transactions = transactions.split('\n')
@@ -122,9 +120,15 @@ maker_prologue = '\n'.join(filter(lambda x: 'opens' in x, transactions))
 
 transactions = '\n'.join([transaction for transaction in transactions if 'opens' not in transaction])
 
-transactions = transactions + '0 bites vault {} ;'.format(args.cdp)
+maker_epilogue = '\n0 bites vault {} ;'.format(args.cdp)
+
+# replace address w/ semantics keyword
+transactions = transactions.replace(sai_token, 'SAI')
+
+logger.info(maker_prologue)
 
 logger.info(transactions)
 
+logger.info(maker_epilogue)
     
-reordering_mev(transactions, spec_file, outfile, acc, tokens, balances, pre_price, post_price, args.address, maker_prologue)
+reordering_mev(transactions, spec_file, outfile, acc, tokens, balances, pre_price, post_price, args.address, maker_prologue, maker_epilogue)

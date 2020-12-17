@@ -157,8 +157,9 @@ rule
      <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) =>
          Vault in SAI gets (0 -Int TotalDebt) ~>
          Vault in 0 gets 0 -Int ((130 *Int TotalDebt) /Int (Px *Int 100)) ~> // 30% penalty
-         Address in SAI gets TotalDebt ~>
-         Address in 0 gets (0 -Int ((90 *Int TotalDebt) /Int (Px *Int 100)) ) //10% discount
+         Address in SAI gets (0 -Int TotalDebt) ~>
+         Address in 0 gets (TotalDebt /Int Px ) //10% discount
+         //Address in 0 gets (0 -Int ((90 *Int TotalDebt) /Int (Px *Int 100)) ) //10% discount
      ... </k>  
      <P> ... (0 , SAI) |-> Px ... </P>
      <S> ... (Vault in 0) |-> TotalCollateral (Vault in SAI) |-> TotalDebt  ... </S>

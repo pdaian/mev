@@ -1,9 +1,13 @@
 import csv, os
 from google.cloud import bigquery
-from exchanges import uniswapv2_relayers, sushiswap_relayers
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "etharbskey.json"
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "bq.json"
 client = bigquery.Client()
+
+
+uniswapv2_relayers = open('latest-data/uniswapv2_relayers').read().strip().splitlines()
+sushiswap_relayers = open('latest-data/sushiswap_relayers').read().strip().splitlines()
 
 
 query = """SELECT log_index,transaction_hash,logs.transaction_index,address,data,topics,logs.block_timestamp,logs.block_number,gas,gas_price,receipt_gas_used FROM 
@@ -22,7 +26,7 @@ for exchange_relayers in (('uniswapv2', uniswapv2_relayers), ('sushiswap', sushi
         # Location must match that of the dataset(s) referenced in the query.
         location='US',
         job_config=job_config)  # API request - starts the query
-    with open('data/all_logs_%s.csv' % (exchange_relayers[0]), 'w') as csvfile:
+    with open('latest-data/all_logs_%s.csv' % (exchange_relayers[0]), 'w') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
 

@@ -51,15 +51,15 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
 
     Path(os.path.dirname(program_file)).mkdir(parents=True, exist_ok=True)
     fout = open(program_file, 'w')
-    #path_to_mev = {}
+    path_to_mev = {}
     
-    #path_num = 0
+    path_num = 0
     for transaction_ordering in all_orderings(all_transactions):
         u = UniswapV1({tokens[0] : balances[0], tokens[1] : balances[1]}, exchange_acc)
         for transaction in transaction_ordering:
             u.process(transaction)
         token_balances = u.config()
-        #mev = 0
+        mev = 0
         for acc in token_balances:
             if acc == exchange_acc:
                 continue
@@ -72,21 +72,27 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
             if total_balance > upper_bounds[acc][token0]:
                 upper_bounds[acc][token0] = total_balance
                 upper_bound_paths[acc] = ('\n'.join(transaction_ordering), token_balances)
-            #extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
+            extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
             #mev += extortion
-        #path_num += 1
-        #path_to_mev[path_num] = mev
+            mev = max(mev,extortion)
+        path_num += 1
+        path_to_mev[path_num] = mev
 
-    #sorted_items = sorted(path_to_mev.items())
+    sorted_items = sorted(path_to_mev.items())
     #print("Writing hill climbing data to {} ...".format(program_file))
-    #fout.write('pathnum,mev\n')
-    #fout.write('\n'.join(["{},{}".format(path_num, mev) for path_num, mev in sorted_items]))
+    fout.write('pathnum,mev\n')
+    fout.write('\n'.join(["{},{}".format(path_num, mev) for path_num, mev in sorted_items]))
         
         
-    mev = 0    
+    mev = 0
+    argmax_acc = 0
     for acc in lower_bounds:
         extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
-        mev += extortion
+        #mev += extortion
+        if extortion > mev :
+            mev = extortion
+            argmax_acc = acc
+    print(argmax_acc)
     '''        
         print(acc, extortion)
         

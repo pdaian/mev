@@ -9,22 +9,33 @@ import random
 def all_orderings(all_transactions):
     ret = list(itertools.permutations(all_transactions))
     random.shuffle(ret)
+    print("Num all reorderings ", len(ret))
+    ret = [x for x in ret if valid_ordering(x)]
+    print("Num valid reorderings", len(ret))
     return ret
 
-def reordering_mev(program, program_file, outfile, acc, tokens, balances, pre_price, post_price, pair_address, maker_prologue):
+def valid_ordering(transaction_ordering):
+    for transaction in transaction_ordering:
+        if 'locks' in transaction:
+            return True
+        elif 'draws' in transaction:
+            return False
+    return True
+
+def reordering_mev(program, program_file, outfile, acc, tokens, balances, pre_price, post_price, pair_address, maker_prologue, maker_epilogue):
 
     program = program.strip()
 
     addresses = set()
     transactions = program.split('\n')
     all_transactions = [transaction for transaction in transactions if not transaction.strip().startswith('//')]
-    print(all_transactions)
+    #print(all_transactions)
     for i in range(0, len(all_transactions)):
         chunks = all_transactions[i].split()
-        print(chunks)
+        #print(chunks)
         addresses.add(chunks[0])
 
-    print(addresses)
+    #print(addresses)
 
     lower_balance_bounds = {}
     upper_balance_bounds = {}
@@ -47,7 +58,7 @@ def reordering_mev(program, program_file, outfile, acc, tokens, balances, pre_pr
         output = ""
         Path(os.path.dirname(program_file)).mkdir(parents=True, exist_ok=True)
         #print("Writing program to", program_file)
-        open(program_file, "w").write(PROLOGUE + '\n'.join(transaction_ordering))
+        open(program_file, "w").write(PROLOGUE + '\n'.join(transaction_ordering) + maker_epilogue)
         sys.stdout.flush()
         pipe = Popen("krun " + program_file, shell=True, stdout=PIPE, stderr=PIPE)
         output = pipe.stdout.read() + pipe.stderr.read()

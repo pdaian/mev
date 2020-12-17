@@ -73,7 +73,8 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
                 upper_bounds[acc][token0] = total_balance
                 upper_bound_paths[acc] = ('\n'.join(transaction_ordering), token_balances)
             extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
-            mev += extortion
+            #mev += extortion
+            mev = max(mev, extortion)
         path_num += 1
         path_to_mev[path_num] = mev
 
@@ -86,7 +87,9 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
     mev = 0    
     for acc in lower_bounds:
         extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
-        mev += extortion
+        # mev += extortion
+        mev = max(mev,extortion)
+    '''        
         print(acc, extortion)
         
     for acc in lower_bounds:
@@ -96,7 +99,6 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
         print(default_to_regular(upper_bound_paths[acc][0]))
         print('')
         print(default_to_regular(lower_bound_paths[acc][0]))
-    '''        
     '''
 
     print(exchange_acc, pair_address, token0, token1, block, len(all_transactions), mev, sep=',')

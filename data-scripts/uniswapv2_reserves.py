@@ -26,12 +26,12 @@ logger = logging.getLogger(__name__)
 
 exchange_name = args.exchange
 
-uniswapv2_logs = 'data/all_logs_uniswapv2.csv'
-sushiswap_logs = 'data/all_logs_sushiswap.csv'
+uniswapv2_logs = 'latest-data/all_logs_uniswapv2.csv'
+sushiswap_logs = 'latest-data/all_logs_sushiswap.csv'
 
 exchange_logs = {'uniswapv2' : uniswapv2_logs, 'sushiswap' : sushiswap_logs}
 
-uniswapv2_pairs = pd.read_csv('data/uniswapv2_pairs.csv').set_index('pair')
+uniswapv2_pairs = pd.read_csv('latest-data/uniswapv2_pairs.csv').set_index('pair')
 
 logsdict = csv.DictReader(open(exchange_logs[exchange_name]), delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -78,7 +78,7 @@ for txhash in txhashes:
             logger.info("Parsed %d" %(parsed))
 
 
-filepath = '%s-reserves.csv' % (exchange_name)
+filepath = 'latest-data/%s-reserves.csv' % (exchange_name)
 
 logger.info("Writing to %s" % (filepath))
 

@@ -6,7 +6,7 @@
 import csv, os
 from google.cloud import bigquery
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "etharbskey.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "bq.json"
 client = bigquery.Client()
 
 
@@ -27,7 +27,7 @@ query_job = client.query(
     job_config=job_config)  # API request - starts the query
 
 
-with open('data/all_logs_uniswapv2_factory.csv', 'w') as csvfile:
+with open('latest-data/all_logs_uniswapv2_factory.csv', 'w') as csvfile:
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 

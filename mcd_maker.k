@@ -140,8 +140,9 @@ rule
      <k> exec(Address:ETHAddress bites vault Vault:ETHAddress) =>
      Vault in DAI gets (0 -Int TotalDebt) ~>
      Vault in CAddress gets 0 -Int TotalCollateral ~>
-     Address in DAI gets TotalDebt *Int Rate /Int 1000000000000000000000000000 ~>
-     Address in CAddress gets (0 -Int ((90 *Int TotalDebt *Int Rate) /Int (Px *Int 100 *Int 1000000000000000000000000000)) ) //10% discount, abstraction for auction
+     Address in DAI gets (0 -Int TotalDebt *Int Rate /Int 1000000000000000000000000000) ~>
+     Address in CAddress gets TotalCollateral // win the reverse auction
+//     Address in CAddress gets (0 -Int ((90 *Int TotalDebt *Int Rate) /Int (Px *Int 100 *Int 1000000000000000000000000000)) ) //10% discount, abstraction for auction
      ...
      </k>
      <R> ... CAddress |-> Rate ... </R>

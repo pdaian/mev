@@ -9,7 +9,7 @@ sushiswap_pairs = set()
 uniswapv2_pairs = set()
 
 
-df = pd.read_csv('data/all_logs_uniswapv2_factory.csv')
+df = pd.read_csv('latest-data/all_logs_uniswapv2_factory.csv')
 for _, row in df.iterrows():
     topics = row['topics'][1:-1]
     data = row['data'][2:]
@@ -35,12 +35,12 @@ for _, row in df.iterrows():
             print(pair_address)
                         
 
-sushiswap_file = 'data/sushiswap_relayers'
+sushiswap_file = 'latest-data/sushiswap_relayers'
 f_sushiswap = open(sushiswap_file, 'w')
 for pair_address in sushiswap_pairs:
     f_sushiswap.write('0x'+ pair_address + '\n')
 
-uniswapv2_file = 'data/uniswapv2_relayers'
+uniswapv2_file = 'latest-data/uniswapv2_relayers'
 f_uniswapv2 = open(uniswapv2_file, 'w')
 for pair_address in uniswapv2_pairs:
     f_uniswapv2.write('0x' + pair_address + '\n')

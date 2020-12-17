@@ -8,7 +8,7 @@ token_counts = {}
 pairs_to_tokens = {}
 
 
-df = pd.read_csv('data/all_logs_uniswapv2_factory.csv')
+df = pd.read_csv('latest-data/all_logs_uniswapv2_factory.csv')
 for _, row in df.iterrows():
     topics = row['topics'][1:-1]
     data = row['data'][2:]
@@ -29,8 +29,8 @@ for _, row in df.iterrows():
         pairs_to_tokens[(address, pair_address)] = (token0_addr, token1_addr)
                         
 
-uniswapv2_top_tokens = 'data/uniswapv2_top_tokens.csv'
-uniswapv2_pairs = 'data/uniswapv2_pairs.csv'
+uniswapv2_top_tokens = 'latest-data/uniswapv2_top_tokens.csv'
+uniswapv2_pairs = 'latest-data/uniswapv2_pairs.csv'
 
 with open(uniswapv2_top_tokens, 'w') as csvfile:
     spamwriter = csv.writer(csvfile, delimiter=',',

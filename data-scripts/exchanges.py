@@ -51,9 +51,7 @@ dex_list = ["0x2a0c0dbecc7e4d658f48e01e3fa353f44050c208", # IDEX
 
 bancor_relayers = open('data/bancor_relayers').read().strip().splitlines()
 kyber_relayers = open('data/kyber_relayers').read().strip().splitlines()
-uniswap_relayers = open('data/uniswap_relayers').read().strip().splitlines()
-uniswapv2_relayers = open('data/uniswapv2_relayers').read().strip().splitlines()
-sushiswap_relayers = open('data/sushiswap_relayers').read().strip().splitlines()
+uniswap_relayers = open('latest-data/uniswap_relayers').read().strip().splitlines()
 
 
 dex_list = dex_list + bancor_relayers + kyber_relayers + uniswap_relayers
@@ -217,7 +215,6 @@ def get_trade_data_from_log_item(topics, data, address):
             exchange = "Kyber"
             parser = parse_kyber
     elif address in uniswap_relayers:
-        print("PARSING", topics)
         if topics[0] == '0x7f4091b46c33e918a0f3aa42307641d17bb67029427a5369e54b353984238705':
             exchange = "Uniswap"
             parser = parse_uniswap_ethpurchase
