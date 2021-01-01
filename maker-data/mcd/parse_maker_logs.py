@@ -6,9 +6,9 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
-maker_logs = 'data/all_logs_maker.csv'
+maker_logs = 'latest-data/all_logs_maker.csv'
 
-outputdir = 'maker-processed'
+outputdir = 'latest-data/maker-processed'
 
 logsdict = csv.DictReader(open(maker_logs), delimiter=',',
                           quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -88,8 +88,8 @@ for txhash in txhashes:
             collateral_type = int(str(data[136:200]), 16)
             src_cdp = int(str(data[200:264]), 16)
             dst_cdp = int(str(data[264:328]), 16)
-            collateral_amount = hex_to_int(str(data[392:456]))
-            debt_amount = hex_to_int(str(data[456:520]))
+            collateral_amount = hex_to_int(str(data[328:392]))
+            debt_amount = hex_to_int(str(data[392:456]))
             action_requested = "%d in %d and %d in %d transferred from %d to %d ;" %(collateral_amount, collateral_type, debt_amount, debt_type, src_cdp, dst_cdp)
             
         if action_requested is not None:

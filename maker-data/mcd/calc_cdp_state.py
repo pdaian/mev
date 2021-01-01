@@ -82,8 +82,8 @@ for txhash in txhashes:
             collateral_type = int(str(data[136:200]), 16)
             src_cdp = int(str(data[200:264]), 16)
             dst_cdp = int(str(data[264:328]), 16)
-            collateral_amount = hex_to_int(str(data[392:456]))
-            debt_amount = hex_to_int(str(data[456:520]))
+            collateral_amount = hex_to_int(str(data[328:392]))
+            debt_amount = hex_to_int(str(data[392:456]))
             cdp_to_state[src_cdp][0] = cdp_to_state[src_cdp][0] - collateral_amount
             cdp_to_state[src_cdp][1] = cdp_to_state[src_cdp][1] - debt_amount
             cdp_to_state[dst_cdp][0] = cdp_to_state[dst_cdp][0] + collateral_amount
