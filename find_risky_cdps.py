@@ -13,6 +13,7 @@ reserves = reserves[reserves.Address == pair_address]
 start_block = reserves.Block.min()
 end_block = reserves.Block.max()
 
+
 cdp_states = pd.read_csv('maker-data/mcd/latest-data/cdp_states.csv')
 cdp_states = cdp_states[cdp_states.Collateral_type == collateral_type]
 cdp_states.Block = cdp_states.Block.astype(int)
@@ -22,16 +23,25 @@ rates = pd.read_csv('maker-data/mcd/latest-data/maker_fees.csv')
 rates.Fees = rates.Fees.astype(float)
 rates.Block = rates.Block.astype(int)
 
+oracle_prices = pd.read_csv('maker-data/mcd/latest-data/spot_prices.csv')
+oracle_prices = oracle_prices[oracle_prices.CollateralType == collateral_type]
+oracle_prices.Block = oracle_prices.Block.astype(int)
+oracle_prices.SpotPrice = oracle_prices.SpotPrice.astype(float)
+
 
 #filter before merging
 rates = rates[(rates.Block <= end_block) & (rates.Block >= start_block)]
 cdp_states = cdp_states[(cdp_states.Block <= end_block) & (cdp_states.Block >= start_block)]
+oracle_prices = oracle_prices[(oracle_prices.Block <= end_block) & (oracle_prices.Block >= start_block)]
+
 
 rates.set_index('Block', inplace=True)
 cdp_states.set_index('Block', inplace=True)
 reserves.set_index('Block', inplace=True)
+oracle_prices.set_index('Block', inplace=True)
 
-dfs = [cdp_states, reserves, rates]
+
+dfs = [cdp_states, reserves, rates, oracle_prices]
 
 df_merged = reduce(lambda  left,right: pd.merge(left,right,on=['Block'], how='outer'), dfs)
 df_merged = df_merged.reset_index().sort_values('Block', kind='mergesort') #mergesort for stable sort
@@ -46,6 +56,12 @@ df_merged.Reserve1 = df_merged.Reserve1.astype(float)
 
 df_merged['Uniswap_price'] = df_merged['Reserve0'] / df_merged['Reserve1']
 
-df = df_merged[['Block', 'Tab', 'Collateral', 'Uniswap_price', 'Debt', 'CDP', 'tx_count']]
+df = df_merged[['Block', 'Tab', 'Collateral', 'Uniswap_price', 'SpotPrice', 'Debt', 'CDP', 'tx_count']]
 
-df['Collateral_ratio'] = ( (df.Collateral * df.Uniswap_price) / (df.Tab + 1) ) 
+#filter out CDPs without debt
+df = df[df.Tab > 0]
+
+df['Uniswap_ratio'] = ( (df.Collateral * df.Uniswap_price) / (df.Tab) )
+df['Oracle_ratio'] = ( (df.Collateral * df.SpotPrice) / (df.Tab * 10**27) )
+
+df = df.sort_values('Uniswap_ratio')
