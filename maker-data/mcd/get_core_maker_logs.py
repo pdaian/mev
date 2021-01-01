@@ -2,7 +2,7 @@ import json
 import csv, os, sys
 from google.cloud import bigquery
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/phil/arbitrage-data/etharbskey.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "bq.json"
 client = bigquery.Client()
 
 contract_addresses = json.load(open('changelog.json'))
@@ -24,7 +24,7 @@ query_job = client.query(
     location='US',
     job_config=job_config)  # API request - starts the query
 
-with open('data/all_logs_maker.csv', 'w') as csvfile:
+with open('latest-data/all_logs_maker.csv', 'w') as csvfile:
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 

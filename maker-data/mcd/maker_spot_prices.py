@@ -6,9 +6,9 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
-maker_logs = 'data/all_logs_maker.csv'
+maker_logs = 'latest-data/all_logs_maker.csv'
 
-outfile = 'spot_prices.csv'
+outfile = 'latest-data/spot_prices.csv'
 
 logsdict = csv.DictReader(open(maker_logs), delimiter=',',
                           quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -19,7 +19,7 @@ txhashes = []
 events= []
 tx_to_block = {}
 
-#Interested in only fold
+#Interested in only file
 interested_topics = ['0x1a0b287e']
 what = '0x73706f74'
 
@@ -45,7 +45,7 @@ for txhash in txhashes:
         action_requested = None
         collateral_type = ''
         if topics[0][:10] == interested_topics[0] and topics[2][:10] == what:
-            # cdp manipulation
+            # oracle update
             collateral_type = int(str(data[136:200]), 16)
             spot_price = int(str(data[264:328]), 16)
             action_requested = "%d,%s,%d" % (collateral_type, tx_to_block[txhash], spot_price)
