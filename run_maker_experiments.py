@@ -66,11 +66,11 @@ logger.info('Block : %s', args.end_block)
 
 exchange_name = args.exchange
 
-reserves = pd.read_csv('data-scripts/%s-reserves.csv' % (exchange_name))
-#uniswapv2_pairs = pd.read_csv('data-scripts/data/uniswapv2_pairs.csv').set_index('pair')
+reserves = pd.read_csv('data-scripts/latest-data/%s-reserves.csv' % (exchange_name))
+#uniswapv2_pairs = pd.read_csv('data-scripts/latest-data/data/uniswapv2_pairs.csv').set_index('pair')
 
 # TODO : check if exists
-transactions_filepath = 'data-scripts/' + exchange_name + '-processed/' + args.address + '.csv'
+transactions_filepath = 'data-scripts/latest-data/' + exchange_name + '-processed/' + args.address + '.csv'
 transactions = ''
 for block in range(int(args.start_block), int(args.end_block) + 1):
     block_str = str(block)

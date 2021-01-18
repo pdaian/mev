@@ -71,9 +71,9 @@ logger.info('Block : %s', args.end_block)
 
 exchange_name = args.exchange
 
-reserves = pd.read_csv('data-scripts/%s-reserves.csv' % (exchange_name))
+reserves = pd.read_csv('data-scripts/latest-data/%s-reserves.csv' % (exchange_name))
 
-mcd_fees_data = pd.read_csv('maker-data/mcd/maker_fees.csv')
+mcd_fees_data = pd.read_csv('maker-data/mcd/latest-data/maker_fees.csv')
 
 if exchange_name == 'uniswapv2':
     acc = 'UniswapV2'
@@ -81,10 +81,10 @@ if exchange_name == 'uniswapv2':
 def get_mcd_rate(given_block):
     pre_fees_data = mcd_fees_data[mcd_fees_data.Block < int(given_block)]
     if len(pre_fees_data) < 1:
-        pre_fees = 0
+        pre_fees = 10**27
     else:
         pre_fees_data = pre_fees_data.iloc[-1]
-        pre_fees = pre_fees_data.FeesInc
+        pre_fees = pre_fees_data.Fees
     return int(pre_fees)
     
 def get_uniswap_reserves(given_block):
@@ -108,7 +108,7 @@ def kint(x):
 def get_mcd_prologue(mcd_transactions, start_block):
     mcd_transactions = mcd_transactions.split('\n')
     mcd_prologue = ''
-    rate = 0
+    rate = 10**27
     balances = {collateral_token: 0, 'DAI': 0}
     curr_block = 0
     for transaction in mcd_transactions:
@@ -140,7 +140,7 @@ def get_mcd_prologue(mcd_transactions, start_block):
 
 
 # TODO : check if exists
-transactions_filepath = 'data-scripts/' + exchange_name + '-processed/' + args.address + '.csv'
+transactions_filepath = 'data-scripts/latest-data/' + exchange_name + '-processed/' + args.address + '.csv'
 amm_transactions = ''
 for block in range(int(args.start_block), int(args.end_block) + 1):
     block_str = str(block)
@@ -150,7 +150,7 @@ for block in range(int(args.start_block), int(args.end_block) + 1):
     amm_transactions = amm_transactions + component_transactions
     
 #maker_transactions_filepath = 'maker-data/maker_data.txt'
-mcd_transactions_filepath = 'maker-data/mcd/maker-processed/%s.csv' % (collateral_type)
+mcd_transactions_filepath = 'maker-data/mcd/latest-data/maker-processed/%s.csv' % (collateral_type)
 
 pipe = Popen('grep -B 1 "vault ' + args.cdp + '" ' + mcd_transactions_filepath, shell=True, stdout=PIPE, stderr=PIPE)
 mcd_transactions = pipe.stdout.read() + pipe.stderr.read()

@@ -3,7 +3,7 @@ TIMEFORMAT=%R,%U,%S
 WORK_DIR=/home/kushal/github-mev
 RESULTS_FILE=$WORK_DIR/results/uniswapv2_execution_time.csv
 echo TxCount,RealTime,UserTime,SysTime,Filename > $RESULTS_FILE
-for file in `ls -rS $WORK_DIR/data-scripts/uniswapv2-processed/0x*.csv`
+for file in `ls -rS $WORK_DIR/data-scripts/latest-data/uniswapv2-processed/0x*.csv`
 do
     lines=`wc -l $file | awk '{print $1}'`
     num_tx=$(( $lines / 2 ))
