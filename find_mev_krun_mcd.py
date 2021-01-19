@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 import itertools
 import random
+import concurrent.futures
 
 def all_orderings(all_transactions):
     num_transactions = len(all_transactions)
@@ -61,17 +62,26 @@ def reordering_mev(program, program_file, outfile, acc, pair_address, maker_prol
     PROLOGUE = maker_prologue + '\n'
     
     path_num = 0
-    for transaction_ordering in all_orderings(all_transactions):
-        output = ""
-        Path(os.path.dirname(program_file)).mkdir(parents=True, exist_ok=True)
-        #print("Writing program to", program_file)
-        open(program_file, "w").write(PROLOGUE + '\n'.join(transaction_ordering) + maker_epilogue)
-        sys.stdout.flush()
-        pipe = Popen("krun " + program_file, shell=True, stdout=PIPE, stderr=PIPE)
-        output = pipe.stdout.read() + pipe.stderr.read()
-        output = str(output, "utf-8")
-        outfilename = outfile+str(path_num)
-        print("Writing output to", outfilename, "...")
-        open(outfilename, "w").write(output)
-        path_num += 1
 
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=96) as executor:
+        for transaction_ordering in all_orderings(all_transactions):
+            executor.submit(process_tx_order, transaction_ordering, program_file, PROLOGUE, maker_epilogue, outfile, path_num)
+            path_num += 1
+
+
+
+def process_tx_order(transaction_ordering, program_file, prologue, maker_epilogue, outfile, path_num):
+    output = ""
+    Path(os.path.dirname(program_file)).mkdir(parents=True, exist_ok=True)
+    #print("Writing program to", program_file)
+    open(program_file, "w").write(prologue + '\n'.join(transaction_ordering) + maker_epilogue)
+    sys.stdout.flush()
+    pipe = Popen("krun " + program_file, shell=True, stdout=PIPE, stderr=PIPE)
+    output = pipe.stdout.read() + pipe.stderr.read()
+    output = str(output, "utf-8")
+    outfilename = outfile+str(path_num)
+    print("Writing output to", outfilename, "...")
+    f = open(outfilename, "w")
+    f.write(output)
+    f.close()
