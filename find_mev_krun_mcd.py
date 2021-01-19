@@ -64,7 +64,7 @@ def reordering_mev(program, program_file, outfile, acc, pair_address, maker_prol
     path_num = 0
 
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=96) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
         for transaction_ordering in all_orderings(all_transactions):
             executor.submit(process_tx_order, transaction_ordering, program_file, PROLOGUE, maker_epilogue, outfile, path_num)
             path_num += 1
@@ -75,7 +75,11 @@ def process_tx_order(transaction_ordering, program_file, prologue, maker_epilogu
     output = ""
     Path(os.path.dirname(program_file)).mkdir(parents=True, exist_ok=True)
     #print("Writing program to", program_file)
-    open(program_file, "w").write(prologue + '\n'.join(transaction_ordering) + maker_epilogue)
+    f = open(program_file, "w")
+    f.write(prologue + '\n'.join(transaction_ordering) + maker_epilogue)
+    f.flush()
+    os.fsync(f.fileno())
+    f.close()
     sys.stdout.flush()
     pipe = Popen("krun " + program_file, shell=True, stdout=PIPE, stderr=PIPE)
     output = pipe.stdout.read() + pipe.stderr.read()
