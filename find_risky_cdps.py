@@ -56,12 +56,19 @@ df_merged.Reserve1 = df_merged.Reserve1.astype(float)
 
 df_merged['Uniswap_price'] = df_merged['Reserve0'] / df_merged['Reserve1']
 
-df = df_merged[['Block', 'Tab', 'Collateral', 'Uniswap_price', 'SpotPrice', 'Debt', 'CDP', 'tx_count']]
+df = df_merged[['Block', 'Tab', 'Collateral', 'Uniswap_price',  'Reserve0', 'Reserve1', 'SpotPrice', 'Debt', 'CDP', 'tx_count']]
 
 #filter out CDPs without debt
 df = df[df.Tab > 0]
 
 df['Uniswap_ratio'] = ( (df.Collateral * df.Uniswap_price) / (df.Tab) )
-df['Oracle_ratio'] = ( (df.Collateral * df.SpotPrice) / (df.Tab * 10**27) )
+df['Oracle_ratio'] = ( (df.Collateral * df.SpotPrice) / (df.Tab * 10**27) ) * 1.5
 
 df = df.sort_values('Uniswap_ratio')
+fd = df[df.Debt > 0]
+filtered = fd[(fd.Tab > 300) & (fd.Oracle_ratio > 1.5) & (fd.Uniswap_ratio > 1.5)].drop_duplicates('CDP')
+filtered2 = fd[(fd.Tab > 300) & (fd.Oracle_ratio > 1.5)].drop_duplicates('CDP')
+
+filtered.to_csv('insertion_targets.csv', index=False)
+
+filtered2.to_csv('easy_targets.csv', index=False)
