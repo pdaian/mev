@@ -31,8 +31,9 @@ def valid_ordering(transaction_ordering):
     '''
     return True
 
-def reordering_mev(program, program_file, outfile, acc, pair_address, maker_prologue, maker_epilogue):
+def reordering_mev(program, program_file, outfile, acc, pair_address, maker_prologue, maker_epilogue, num_workers):
 
+    num_workers = int(num_workers)
     program = program.strip()
 
     
@@ -60,11 +61,10 @@ def reordering_mev(program, program_file, outfile, acc, pair_address, maker_prol
     '''
 
     PROLOGUE = maker_prologue + '\n'
-    
     path_num = 0
 
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         for transaction_ordering in all_orderings(all_transactions):
             executor.submit(process_tx_order, transaction_ordering, program_file, PROLOGUE, maker_epilogue, outfile, path_num)
             path_num += 1

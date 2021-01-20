@@ -38,6 +38,11 @@ parser.add_argument(
     help="Block number to find MEV in",
     required=True
 )
+parser.add_argument(
+    '-n', '--num_workers',
+    help="Number of threads to use",
+    required=True
+)
 
 parser.add_argument(
     '-a', '--address',
@@ -182,4 +187,4 @@ logger.info(transactions)
 
 logger.info(mcd_epilogue)
     
-reordering_mev(transactions, spec_file, outfile, acc, args.address, mcd_prologue, mcd_epilogue)
+reordering_mev(transactions, spec_file, outfile, acc, args.address, mcd_prologue, mcd_epilogue, args.num_workers)
