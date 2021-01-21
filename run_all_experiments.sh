@@ -1,18 +1,7 @@
 #!/bin/bash
-exchange_name=sushiswap
-pairs_data=data-scripts/latest-data/data/uniswapv2_pairs.csv
-echo exchange,pair,token0,token1,block,numtransactions,mev
-for file in `ls -S data-scripts/latest-data/$exchange_name-processed/0x* | head -n 10`
-do
-    temp=${file%.csv}
-    address=${temp##*/}
-    for block in `sort -rt, -k2 -n data-scripts/latest-data/active-region/$exchange_name/txcount_$address.csv | grep ,[0-9]$ | head -n 30 | cut -f1 -d,`
-    #for block in `sort -rt, -k2 -n data-scripts/latest-data/active-region/$exchange_name/txcount_$address.csv | head -n 30 | cut -f1 -d,`
-    do
-        cmd="time python3 run_uniswapv2_experiments.py -b $block -a $address -e $exchange_name &"
-        eval $cmd
-        mkdir -p /tmp/plot_mev/$exchange_name/
-        cp experiments/$block-$address/bound.k /tmp/plot_mev/$exchange_name/convergence-$block-$address.csv
-    done
-    wait
-done
+
+./run_tractable_experiments.sh sushiswap > sushiswap_mev.csv 2> sushiswap_mev.err &
+./run_intractable_experiments.sh sushiswap > sushiswap_approx_mev.csv 2> sushiswap_approx_mev.err &
+wait
+./run_intractable_experiments.sh uniswapv2 > uniswapv2_approx_mev.csv 2> uniswapv2_approx_mev.err &
+./run_tractable_experiments.sh uniswapv2 > uniswapv2_mev.csv 2> uniswapv2_mev.err &
