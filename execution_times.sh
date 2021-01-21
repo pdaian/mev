@@ -1,6 +1,6 @@
 #!/bin/bash
 TIMEFORMAT=%R,%U,%S
-WORK_DIR=/home/kushal/github-mev
+WORK_DIR=$(HOME)/github-mev
 RESULTS_FILE=$WORK_DIR/results/uniswapv2_execution_time.csv
 echo TxCount,RealTime,UserTime,SysTime,Filename > $RESULTS_FILE
 for file in `ls -rS $WORK_DIR/data-scripts/latest-data/uniswapv2-processed/0x*.csv`
