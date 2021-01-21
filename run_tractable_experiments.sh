@@ -20,7 +20,7 @@ do
     do
         cmd="python3 run_uniswapv2_experiments.py -b $block -a $address -e $exchange_name -c &"
         echo $cmd >> $cmds_file
-        waitforjobs 10
+        waitforjobs 20
         eval $cmd
         cp experiments/$block-$address/bound.k /tmp/plot_mev/$exchange_name/convergence-$block-$address.csv
 
