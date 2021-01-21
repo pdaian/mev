@@ -8,8 +8,8 @@ import glob
 
 #fin = open('data-scripts/latest-data/uniswapv1-processed/89d24a6b4ccb1b6faa2625fe562bdd9a23260359.csv', 'r')
 
-filenames = glob.glob('data-scripts/latest-data/uniswapv1-processed/*.csv')
-fout = open('data-scripts/latest-data/uniswapv1-reserves.csv', 'w')
+filenames = glob.glob('latest-data/uniswapv1-processed/*.csv')
+fout = open('latest-data/uniswapv1-reserves.csv', 'w')
 fout.write('Block,Address,Token0,Token1,Reserve0,Reserve1\n')
 exchange_acc = 'UniswapV1'
 

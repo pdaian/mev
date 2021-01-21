@@ -24,7 +24,7 @@ def default_to_regular(d):
     return d
 
 
-def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balances, pre_price, post_price, pair_address, block):
+def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balances, pre_price, post_price, pair_address, block, convergence):
 
     program = program.strip()
 
@@ -40,8 +40,9 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
     elif weth == tokens[1]:
         token1 = tokens[0]
     else:
-        logging.warning("WETH not part of the pair")
-        return
+        token0 = tokens[0]
+        token1 = tokens[1]
+        logging.warning("WETH not part of the pair " + ' '.join([str(token0), str(token1), str(pair_address)]))
 
     lower_bounds = defaultdict(lambda : {token0 : 99999999999999999999999999999999})
     upper_bounds = defaultdict(lambda : {token0 : -99999999999999999999999999999999})
@@ -50,7 +51,6 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
     upper_bound_paths = defaultdict(lambda: ('', {}))
 
     Path(os.path.dirname(program_file)).mkdir(parents=True, exist_ok=True)
-    fout = open(program_file, 'w')
     path_to_mev = {}
     
     path_num = 0
@@ -80,8 +80,11 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
 
     sorted_items = sorted(path_to_mev.items())
     #print("Writing hill climbing data to {} ...".format(program_file))
-    fout.write('pathnum,mev\n')
-    fout.write('\n'.join(["{},{}".format(path_num, mev) for path_num, mev in sorted_items]))
+    if convergence:
+        fout = open(program_file, 'w')
+        fout.write('pathnum,mev\n')
+        fout.write('\n'.join(["{},{}".format(path_num, mev) for path_num, mev in sorted_items]))
+        fout.close()
         
         
     mev = 0
@@ -92,8 +95,8 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
         if extortion > mev :
             mev = extortion
             argmax_acc = acc
-    print(argmax_acc)
     '''        
+    print(argmax_acc)
         print(acc, extortion)
         
     for acc in lower_bounds:

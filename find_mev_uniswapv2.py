@@ -40,9 +40,9 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
     elif weth == tokens[1]:
         token1 = tokens[0]
     else:
-        logging.warning("WETH not part of the pair")
         token0 = tokens[0]
         token1 = tokens[1]
+        logging.warning("WETH not part of the pair " + ' '.join([str(token0), str(token1), str(pair_address)]))
 
     lower_bounds = defaultdict(lambda : {token0 : 99999999999999999999999999999999})
     upper_bounds = defaultdict(lambda : {token0 : -99999999999999999999999999999999})
@@ -84,7 +84,7 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
         fout = open(program_file, 'w')
         fout.write('pathnum,mev\n')
         fout.write('\n'.join(["{},{}".format(path_num, mev) for path_num, mev in sorted_items]))
-        
+        fout.close()
         
     mev = 0    
     for acc in lower_bounds:

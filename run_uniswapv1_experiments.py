@@ -40,6 +40,12 @@ parser.add_argument(
 )
 
 
+parser.add_argument(
+    '-c', '--convergence',
+    help="collect convervgence data",
+    action="store_true"
+)
+
 args = parser.parse_args()    
 logging.basicConfig(level=args.loglevel, format='%(message)s')
 
@@ -88,4 +94,4 @@ spec_file = 'experiments-uniswapv1/' + identifier + '/bound.k'
 outfile = 'output/'+ identifier +'.out'
 
     
-reordering_mev(transactions, spec_file, outfile, acc, tokens, balances, pre_price, post_price, args.address, args.block)
+reordering_mev(transactions, spec_file, outfile, acc, tokens, balances, pre_price, post_price, args.address, args.block, args.convergence)

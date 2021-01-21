@@ -74,6 +74,8 @@ def get_uniswap_token(address):
         token_addr = erc20.functions.tokenAddress().call()
     except web3.exceptions.BadFunctionCallOutput: # todo handle chainsync errors?
         pass
+    except web3.exceptions.ContractLogicError:
+        print("web3.exceptions.ContractLogicError", address)
     return token_addr.lower().replace("0x", "")
 
 @persist_to_file('decimals.dat')
