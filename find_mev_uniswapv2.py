@@ -24,7 +24,7 @@ def default_to_regular(d):
     return d
 
 
-def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balances, pre_price, post_price, pair_address, block, convergence):
+def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balances, pre_price, post_price, pair_address, block, convergence, log_paths):
 
     program = program.strip()
 
@@ -93,15 +93,18 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
         mev = max(mev,extortion)
     '''        
         print(acc, extortion)
-        
-    for acc in lower_bounds:
-        print(acc)
-        print(default_to_regular(upper_bound_paths[acc][1]))
-        print(default_to_regular(lower_bound_paths[acc][1]))
-        print(default_to_regular(upper_bound_paths[acc][0]))
-        print('')
-        print(default_to_regular(lower_bound_paths[acc][0]))
     '''
+    if log_paths:    
+        for acc in lower_bounds:
+            extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
+            if extortion == mev:
+                print(acc)
+                print(default_to_regular(upper_bound_paths[acc][1]))
+                print(default_to_regular(lower_bound_paths[acc][1]))
+                print(default_to_regular(upper_bound_paths[acc][0]))
+                print('')
+                print(default_to_regular(lower_bound_paths[acc][0]))
+                break
 
     print(exchange_acc, pair_address, token0, token1, block, len(all_transactions), mev, sep=',')
     

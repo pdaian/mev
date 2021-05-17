@@ -45,6 +45,13 @@ parser.add_argument(
     action="store_true"
 )
 
+parser.add_argument(
+    '-p', '--paths',
+    help="collect paths data",
+    action="store_true"
+)
+
+
 
 args = parser.parse_args()    
 logging.basicConfig(level=args.loglevel, format='%(message)s')
@@ -96,4 +103,4 @@ spec_file = 'experiments/' + identifier + '/bound.k'
 outfile = 'output/'+ identifier +'.out'
 
     
-reordering_mev(transactions, spec_file, outfile, acc, tokens, balances, pre_price, post_price, args.address, args.block, args.convergence)
+reordering_mev(transactions, spec_file, outfile, acc, tokens, balances, pre_price, post_price, args.address, args.block, args.convergence, args.paths)
