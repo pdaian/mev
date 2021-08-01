@@ -32,7 +32,7 @@ def transaction_to_hash(data, transactions):
             if transaction in data[idx]:
                 metadata.append(data[idx-1])
                 break
-    return '\n'.join(metadata)
+    return ','.join(metadata)
     
 
 def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balances, pre_price, post_price, pair_address, block, convergence, log_paths):
@@ -103,7 +103,7 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
     for acc in lower_bounds:
         extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
         #mev += extortion
-        if extortion > mev :
+        if extortion >= mev :
             mev = extortion
             argmax_acc = acc
     '''        

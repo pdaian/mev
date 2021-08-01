@@ -18,12 +18,11 @@ do
     address=${temp##*/}
     for block in `sort -rt, -k2 -n data-scripts/latest-data/active-region/$exchange_name/txcount_$address.csv | grep ,[0-9]$ | head -n 30 | cut -f1 -d,`
     do
-        cmd="python3 run_uniswapv2_experiments.py -b $block -a $address -e $exchange_name -c &"
+        cmd="python3 run_uniswapv2_experiments.py -b $block -a $address -e $exchange_name -p validate_$exchange_name &"
         echo $cmd >> $cmds_file
         waitforjobs 20
         eval $cmd
-        cp experiments/$block-$address/bound.k /tmp/plot_mev/$exchange_name/convergence-$block-$address.csv
+        # cp experiments/$block-$address/bound.k /tmp/plot_mev/$exchange_name/convergence-$block-$address.csv
 
     done
-    #wait
 done

@@ -5,7 +5,6 @@ input_dir = sys.argv[1]
 output_dir = sys.argv[2]
 
 for filename in os.listdir(input_dir):
-    print(filename)
     fin = open(os.path.join(input_dir,filename), 'r')
     outfile = os.path.join(output_dir, 'txcount_' + filename)
 

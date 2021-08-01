@@ -49,8 +49,8 @@ dex_list = ["0x2a0c0dbecc7e4d658f48e01e3fa353f44050c208", # IDEX
            ]
 
 
-bancor_relayers = open('data/bancor_relayers').read().strip().splitlines()
-kyber_relayers = open('data/kyber_relayers').read().strip().splitlines()
+bancor_relayers = open('latest-data/bancor_relayers').read().strip().splitlines()
+kyber_relayers = open('latest-data/kyber_relayers').read().strip().splitlines()
 uniswap_relayers = open('latest-data/uniswap_relayers').read().strip().splitlines()
 
 

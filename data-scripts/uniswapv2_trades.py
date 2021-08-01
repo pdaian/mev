@@ -1,6 +1,7 @@
 import csv, os
 import pandas as pd
 import logging
+import sys
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 from exchanges import get_trade_data_from_log_item, get_uniswap_token, topics_from_text
 
-exchange_name = 'uniswapv2'
+exchange_name = sys.argv[1]
 
 uniswapv2_logs = 'latest-data/all_logs_uniswapv2.csv'
 sushiswap_logs = 'latest-data/all_logs_sushiswap.csv'

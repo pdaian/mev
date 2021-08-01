@@ -24,7 +24,18 @@ def default_to_regular(d):
     return d
 
 
-def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balances, pre_price, post_price, pair_address, block, convergence, log_paths):
+def transaction_to_hash(data, transactions):
+    metadata = []
+    transactions = transactions.split('\n')
+    for transaction in transactions:
+        for idx in range(len(data)):
+            if transaction in data[idx]:
+                metadata.append(data[idx-1].split()[2])
+                break
+    return ','.join(metadata)
+
+
+def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balances, pair_address, prices, block, convergence):
 
     program = program.strip()
 
@@ -32,20 +43,11 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
     all_transactions = [transaction.strip() for transaction in transactions if not transaction.strip().startswith('//')]
     logging.info(all_transactions)
 
-    weth = '1097077688018008265106216665536940668749033598146'
-    token0 = weth
-    
-    if weth == tokens[0]:
-        token1 = tokens[1]
-    elif weth == tokens[1]:
-        token1 = tokens[0]
-    else:
-        token0 = tokens[0]
-        token1 = tokens[1]
-        logging.warning("WETH not part of the pair " + ' '.join([str(token0), str(token1), str(pair_address)]))
+    token0 = tokens[0]
+    token1 = tokens[1]
 
-    lower_bounds = defaultdict(lambda : {token0 : 99999999999999999999999999999999})
-    upper_bounds = defaultdict(lambda : {token0 : -99999999999999999999999999999999})
+    lower_bounds = defaultdict(lambda : defaultdict(lambda: 99999999999999999999999999999999))
+    upper_bounds = defaultdict(lambda : defaultdict(lambda: -99999999999999999999999999999999))
 
     lower_bound_paths = defaultdict(lambda : ('', {}))
     upper_bound_paths = defaultdict(lambda: ('', {}))
@@ -65,7 +67,7 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
                 continue
             balance0 =  token_balances[acc][token0]
             balance1 =  token_balances[acc][token1]
-            total_balance = balance0 + (token_balances[exchange_acc][token0] * balance1) / token_balances[exchange_acc][token1]
+            total_balance = balance0 * prices[token0] + balance1 * prices[token1]
             if total_balance < lower_bounds[acc][token0]:
                 lower_bounds[acc][token0] = total_balance
                 lower_bound_paths[acc] = ('\n'.join(transaction_ordering), token_balances)
@@ -86,27 +88,19 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
         fout.write('\n'.join(["{},{}".format(path_num, mev) for path_num, mev in sorted_items]))
         fout.close()
         
-    mev = 0    
+    mev = 0
+    argmax_acc = 0
     for acc in lower_bounds:
         extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
         # mev += extortion
-        mev = max(mev,extortion)
+        if extortion >= mev :
+            mev = extortion
+            argmax_acc = acc
     '''        
         print(acc, extortion)
     '''
-    if log_paths:    
-        for acc in lower_bounds:
-            extortion = upper_bounds[acc][token0] - lower_bounds[acc][token0]
-            if extortion == mev:
-                print(acc)
-                print(default_to_regular(upper_bound_paths[acc][1]))
-                print(default_to_regular(lower_bound_paths[acc][1]))
-                print(default_to_regular(upper_bound_paths[acc][0]))
-                print('')
-                print(default_to_regular(lower_bound_paths[acc][0]))
-                break
 
-    print(exchange_acc, pair_address, token0, token1, block, len(all_transactions), mev, sep=',')
+    return mev, transaction_to_hash(transactions, default_to_regular(upper_bound_paths[argmax_acc][0])), transaction_to_hash(transactions, default_to_regular(lower_bound_paths[argmax_acc][0]))
     
 #    print(upper_bound_paths)
 #    print(lower_bound_paths)
