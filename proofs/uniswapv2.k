@@ -80,7 +80,7 @@ module UNISWAPV2
     rule <k> GetPrice Token0 Token1 => .K ... </k>
          <B> ... .List => ListItem(GetPrice Token0 Token1) </B>
          <S> ... (Amm in Token0) |-> Qty0 (Amm in Token1) |-> Qty1 ... </S>
-//         <P> Px => Px[(Token0 , Token1) <- (Qty1 /Int Qty0)][(Token1 , Token0) <- (Qty0 /Int Qty1)] </P>
+         <P> Px => Px[(Token0 , Token1) <- (Qty1 /Int Qty0)][(Token1 , Token0) <- (Qty0 /Int Qty1)] </P>
 
 
 endmodule

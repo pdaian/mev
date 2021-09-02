@@ -9,6 +9,7 @@ import argparse
 import logging
 #from find_mev_krun_uniswapv2 import reordering_mev
 from find_mev_uniswapv2 import reordering_mev
+from collections import defaultdict
 
 # price in eth
 def get_price(token, reserves, block):
@@ -24,6 +25,29 @@ def get_price(token, reserves, block):
     if len(pre_reserve) > 0:
         return (int(pre_reserve.iloc[-1].Reserve0) + 0.0) / (int(pre_reserve.iloc[-1].Reserve1))
     return None
+
+def get_address_from_tx(transaction, tokens):
+    # print(transaction)
+    for address in tokens:
+        token0 = tokens[address][0]
+        token1 = tokens[address][1]
+        if token0 in transaction and token1 in transaction:
+            # print(address)
+            return address 
+    return None
+
+def associate_address(data, tokens):
+    ret = {}
+    transactions = data.split('\n')
+    for idx in range(1, len(transactions), 2):
+        address = get_address_from_tx(transactions[idx], tokens)
+        if address is None:
+            continue
+        if address not in ret:
+            ret[address] = ''
+        ret[address] = ret[address] + transactions[idx-1] + '\n' + transactions[idx] + '\n'
+    return ret
+    
 
 
 
@@ -47,6 +71,12 @@ parser.add_argument(
     '-b', '--block',
     help="Block number to find MEV in",
     required=True
+)
+
+parser.add_argument(
+    '-d', '--date',
+    help="Date",
+    required=""
 )
 
 parser.add_argument(
@@ -82,7 +112,10 @@ exchange_name = args.exchange
 
 addresses = set(args.address)
 
-reserves = pd.read_csv('data-scripts/latest-data/%s-reserves.csv' % (exchange_name))
+date = args.date
+month = date[:7]
+
+reserves = pd.read_csv('data-scripts/latest-data/{}-reserves-segmented/{}'.format(exchange_name, month))
 #uniswapv2_pairs = pd.read_csv('data-scripts/latest-data/data/uniswapv2_pairs.csv').set_index('pair')
 
 balances = {}
@@ -105,6 +138,7 @@ for address in addresses:
         logger.warning("unknown prices for %s", address)
         sys.exit(1)
 
+logger.info(tokens)
 logger.info(balances)
 
 if exchange_name == 'uniswapv2':
@@ -119,10 +153,16 @@ outfile = 'output/'+ identifier +'.out'
 
 # TODO : check if exists
 transactions = {}
-for address in addresses:
-    transactions_filepath = 'data-scripts/latest-data/' + exchange_name + '-processed/' + address + '.csv'
+
+if date != "":
+    transactions_filepath = 'data-scripts/latest-data/' + exchange_name + '-indexed/' + date + '.csv' 
     pipe = Popen('grep -A 1 "block ' + args.block + '" ' + transactions_filepath, shell=True, stdout=PIPE, stderr=PIPE)
-    transactions[address] = str(pipe.stdout.read() + pipe.stderr.read(), "utf-8")
+    transactions = associate_address(str(pipe.stdout.read() + pipe.stderr.read(), "utf-8"), tokens)
+else:
+    for address in addresses:
+        transactions_filepath = 'data-scripts/latest-data/' + exchange_name + '-processed/' + address + '.csv'
+        pipe = Popen('grep -A 1 "block ' + args.block + '" ' + transactions_filepath, shell=True, stdout=PIPE, stderr=PIPE)
+        transactions[address] = str(pipe.stdout.read() + pipe.stderr.read(), "utf-8")
 
 logger.info(transactions)
 

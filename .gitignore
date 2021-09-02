@@ -1,3 +1,5 @@
+random_cmds_all_*
+validate_random_*
 *.out
 *.swp
 mev-kompiled
