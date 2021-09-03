@@ -96,9 +96,6 @@ def reordering_mev(program, program_file, outfile, exchange_acc, tokens, balance
         if extortion >= mev :
             mev = extortion
             argmax_acc = acc
-    '''        
-        print(acc, extortion)
-    '''
 
     return mev, transaction_to_hash(transactions, default_to_regular(upper_bound_paths[argmax_acc][0])), transaction_to_hash(transactions, default_to_regular(lower_bound_paths[argmax_acc][0]))
     

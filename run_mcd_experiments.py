@@ -10,6 +10,9 @@ import logging
 #from find_mev_krun_uniswapv2 import reordering_mev
 #from find_mev_uniswapv1 import reordering_mev
 from find_mev_krun_mcd import reordering_mev
+import time
+
+start_time = time.time()
 
 parser = argparse.ArgumentParser(description='Run MCD experiments')
 
@@ -186,5 +189,11 @@ logger.info(mcd_prologue)
 logger.info(transactions)
 
 logger.info(mcd_epilogue)
+
+reordering_time = time.time()
     
 reordering_mev(transactions, spec_file, outfile, acc, args.address, mcd_prologue, mcd_epilogue, args.num_workers)
+
+end_time = time.time()
+
+print("{},{},{}".format(args.num_workers, end_time-start_time, end_time-reordering_time))
