@@ -12,7 +12,7 @@ from find_mev_uniswapv1 import reordering_mev
 
 # price in eth
 def get_price(token, reserves, block):
-    weth = 0
+    weth = '0'
     if token == weth:
         return 1.0
     pre_reserve = reserves[(reserves.Token0 == token) & (reserves.Token1 == weth) & (reserves.Block <  int(block))]
@@ -90,7 +90,7 @@ date = args.date
 month = date[:7]
 
 
-reserves = pd.read_csv('data-scripts/latest-data/%s-reserves.csv' % (exchange_name))
+reserves = pd.read_csv('data-scripts/latest-data/%s-reserves.csv' % (exchange_name), dtype={'Token1': object, 'Token0': object})
 #uniswapv2_pairs = pd.read_csv('data-scripts/latest-data/data/uniswapv2_pairs.csv').set_index('pair')
 
 balances = {}
