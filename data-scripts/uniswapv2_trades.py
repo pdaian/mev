@@ -119,4 +119,4 @@ for address in events_by_address:
     logger.info("Written %s" % (filepath))
 
 logger.info("Writing All...")
-open('%s/all.csv' % (outputdir), 'w').write("\n".join(events) + '\n')
+#open('%s/all.csv' % (outputdir), 'w').write("\n".join(events) + '\n')

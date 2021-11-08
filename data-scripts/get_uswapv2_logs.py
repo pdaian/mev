@@ -16,7 +16,7 @@ query = """SELECT log_index,transaction_hash,logs.transaction_index,address,data
 WHERE
   logs.address in UNNEST(@relayers) ORDER BY block_number ASC, transaction_index ASC"""
 
-for exchange_relayers in (('uniswapv2', uniswapv2_relayers), ('sushiswap', sushiswap_relayers)):
+for exchange_relayers in (('sushiswap', sushiswap_relayers), ('uniswapv2', uniswapv2_relayers)):
     aqp = bigquery.ArrayQueryParameter('relayers', 'STRING', exchange_relayers[1])
     query_params = [aqp]
     job_config = bigquery.QueryJobConfig()
