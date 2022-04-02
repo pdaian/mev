@@ -27,8 +27,8 @@ module UNISWAPV2
             Amm in TokenIn gets 0 -Int AmountOutTokenIn ~>
             Address in TokenOut gets (((997 *Int AmountInTokenIn -Int 1000 *Int AmountOutTokenIn) *Int USwapV2BalanceOut) /Int (1000 *Int (USwapV2BalanceIn -Int AmountOutTokenIn) +Int 997 *Int AmountInTokenIn)) +Int ((AmountInTokenOut *Int 997) /Int (1000)) ~>
             Amm in TokenOut gets 0 -Int ( (((997 *Int AmountInTokenIn -Int 1000 *Int AmountOutTokenIn) *Int USwapV2BalanceOut) /Int (1000 *Int (USwapV2BalanceIn -Int AmountOutTokenIn) +Int 997 *Int AmountInTokenIn)) +Int ((AmountInTokenOut *Int 997) /Int (1000)) ) ~>
-            Address in 0 gets 0 -Int GasFee ~>
-            GetPrice TokenIn TokenOut
+            Address in 0 gets 0 -Int GasFee
+            //GetPrice TokenIn TokenOut
             ...
          </k> 
          <S> ... (Amm in TokenOut) |-> USwapV2BalanceOut (Amm in TokenIn) |-> USwapV2BalanceIn ... </S> 
@@ -42,8 +42,8 @@ module UNISWAPV2
             Amm in TokenOut gets 0 -Int AmountOutTokenOut ~>
             Address in TokenIn gets 0 -Int ((1000 *Int USwapV2BalanceIn *Int AmountOutTokenOut) /Int (997 *Int (USwapV2BalanceOut -Int AmountOutTokenOut )) +Int 1) ~>
             Amm in TokenIn gets ((1000 *Int USwapV2BalanceIn *Int AmountOutTokenOut) /Int (997 *Int (USwapV2BalanceOut -Int AmountOutTokenOut )) +Int 1) ~>
-            Address in 0 gets 0 -Int GasFee ~>
-            GetPrice TokenIn TokenOut
+            Address in 0 gets 0 -Int GasFee 
+            //GetPrice TokenIn TokenOut
             ...
          </k>
          <S> ... (Amm in TokenOut) |-> USwapV2BalanceOut (Amm in TokenIn) |-> USwapV2BalanceIn ... </S> 
@@ -64,15 +64,15 @@ module UNISWAPV2
     // todo accurate pricing rules
     // todo fees
     rule <k> exec(On Amm:Exchange LiquidityProvider:ETHAddress adds Amount0:Int Token0:ETHAddress and Amount1:Int Token1:ETHAddress of liquidity)  => 
-             Amm in Token0 gets Amount0 ~> Amm in Token1 gets Amount1 ~> 
-             GetPrice Token0 Token1
+             Amm in Token0 gets Amount0 ~> Amm in Token1 gets Amount1
+             //GetPrice Token0 Token1
              ...
          </k>
          <B> ... .List => ListItem(On Amm LiquidityProvider adds Amount0 Token0 and Amount1 Token1 of liquidity) </B>
 
     rule <k> exec(On Amm:Exchange LiquidityProvider:ETHAddress removes Amount0:Int Token0:ETHAddress and Amount1:Int Token1:ETHAddress of liquidity)  => 
-             Amm in Token0 gets 0 -Int Amount0 ~> Amm in Token1 gets 0 -Int Amount1 ~>
-             GetPrice Token0 Token1
+             Amm in Token0 gets 0 -Int Amount0 ~> Amm in Token1 gets 0 -Int Amount1 
+             //GetPrice Token0 Token1
              ...
          </k>
          <B> ... .List => ListItem(On Amm LiquidityProvider removes Amount0 Token0 and Amount1 Token1 of liquidity) </B>

@@ -1,9 +1,9 @@
 require "uniswapv2.k"
-require "maker.k"
+//require "maker.k"
 
 module PROOF-SYNTAX
     imports UNISWAPV2-SYNTAX
-    import MAKER-SYNTAX
+//    import MAKER-SYNTAX
 endmodule
 
 module PROOF

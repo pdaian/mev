@@ -5,7 +5,7 @@ module EXECUTION-SYNTAX
     syntax ETHTransaction ::= ETHTransaction "fee" Int
                               | ETHTransaction "block" Int
     
-    syntax ETHAddress ::= Int | "ETH"
+    syntax ETHAddress ::= Int | "ETH" | "BBT" | "Miner" | "User"
     syntax BalanceEntry ::= ETHAddress "in" ETHAddress
 
     syntax Statement ::= ETHAddress "in" ETHAddress "gets" Int // set token balance
@@ -30,6 +30,7 @@ configuration
     <P> .Map </P>
     <V> .Map </V> // Mapping of Maker Vault to Owner
     <R> .Map </R> // Stability fees for Maker
+    <T> 0 |-> 0 </T>
     <N> 1 </N> // Number of transactions a miner can insert
 
     // Boring stuff; setup state before miner can execute.  Setup S and aggregate available txs.
@@ -46,13 +47,13 @@ configuration
 //    rule <k> TX:ETHTransaction => .K ... </k>
 //         <M> ... .Set => SetItem(TX) </M>
 
-    // TX Censoring
-    // rule <k> _:ETHTransaction => .K ... </k>
-
 //    rule <k> .K => exec(TX) </k>
 //         <M> ... SetItem(TX:ETHTransaction) => .Set ... </M>
 
     rule <k> TX:ETHTransaction => exec(TX) ... </k>
+
+    // TX Censoring
+    // rule <k> _:ETHTransaction => .K ... </k>
 
     rule <k> B:Block S:Statement; => B ~> S ... </k>
     rule <k> S:Statement; => S ... </k>
