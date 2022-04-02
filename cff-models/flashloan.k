@@ -15,13 +15,12 @@ module FLASHLOAN
     rule <k> exec(Player:ETHAddress borrows Amount:Int Token:ETHAddress calls into Call:ETHTransaction returns Change:Int Token:ETHAddress fee GasFee:Int)  => 
             Player in Token gets Amount ~>
             Pool in Token gets 0 -Int Amount ~>
-            Call ~>
+            Call ~> // call another contract
             Player in Token gets 0 -Int Change ~>
             Pool in Token gets Change
             ...
          </k>
-        //  <S> Pool |-> Reserves </S>
          <B> ... .List => ListItem(Player borrows Amount Token calls into Call returns Change Token fee GasFee) </B>
-        requires (Change >=Int Amount)// check here or in kprove claim? 
+        requires (Change >=Int Amount) // return more than borrowed, flashloan fee 0 for now
 
 endmodule

@@ -16,5 +16,5 @@ module BETTING
          </k> 
          <T> ... Proposal |-> Stake  ... </T>
          <B> ... .List => ListItem(Player claims reward for Proposal fee GasFee) </B>
-        requires(Stake >=Int 0)
+        requires(Stake >=Int 0) // Proposal passed
 endmodule
